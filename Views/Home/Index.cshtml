@@ -1,8 +1,337 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<PDKS.Entities.LeaveRequest>
+@{
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    /* --- ÜST KARTLARIN TASARIMI --- */
+    .dash-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+        .dash-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .icon-box {
+        width: 75px;
+        height: 75px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+        .icon-box i {
+            font-size: 32px;
+        }
+
+    .card-info {
+        margin-left: 20px;
+    }
+
+    .card-title-text {
+        font-size: 15px;
+        font-weight: 700;
+        color: #8f9bba;
+        margin-bottom: 4px;
+    }
+
+    .card-number {
+        font-size: 32px;
+        font-weight: 800;
+        color: #2b3674;
+        margin-bottom: 4px;
+        line-height: 1;
+    }
+
+    .card-trend {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    /* Renk Paletleri */
+    .bg-blue-light {
+        background-color: #f4f7fe;
+    }
+
+    .text-blue-main {
+        color: #4318ff;
+    }
+
+    .bg-green-light {
+        background-color: #e6fced;
+    }
+
+    .text-green-main {
+        color: #05cd99;
+    }
+
+    .bg-orange-light {
+        background-color: #fff4e5;
+    }
+
+    .text-orange-main {
+        color: #ff9f43;
+    }
+
+    .bg-purple-light {
+        background-color: #f4e8ff;
+    }
+
+    .text-purple-main {
+        color: #8e33ff;
+    }
+
+    /* --- ALT KARTLAR (DUYURULAR & İZİNLER) TASARIMI --- */
+    .content-widget {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        height: 100%;
+    }
+
+    /* İzinler kartı için premium koyu tema */
+    .content-widget-dark {
+        background: #0b1437;
+        color: white;
+    }
+
+    .widget-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .widget-title-light {
+        color: #2b3674;
+    }
+
+    .widget-title-dark {
+        color: #ffffff;
+    }
+
+    /* Liste Elemanları */
+    .list-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .content-widget-dark .list-item {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .list-item:last-child {
+        border-bottom: none;
+    }
+
+    /* İzinler İçin Profil İkonu */
+    .avatar-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-right: 18px;
+        color: #fff;
+    }
+
+    .leave-info h6 {
+        font-size: 16px;
+        font-weight: 800;
+        margin: 0 0 5px 0;
+        color: #fff;
+    }
+
+    .leave-info p {
+        font-size: 14px;
+        color: #a3aed1;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .leave-date {
+        margin-left: auto;
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        text-align: right;
+    }
+
+    /* Duyurular İçin Tasarım */
+    .announcement-date {
+        font-size: 13px;
+        font-weight: 700;
+        color: #a3aed1;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .announcement-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #2b3674;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .new-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #ff3d00;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .announcement-desc {
+        font-size: 15px;
+        color: #707eae;
+        font-weight: 500;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .view-all-link {
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        color: #4318ff;
+        display: inline-block;
+        margin-top: 20px;
+        transition: 0.3s;
+    }
+
+        .view-all-link:hover {
+            color: #2b3674;
+        }
+
+    .content-widget-dark .view-all-link {
+        color: #a3aed1;
+    }
+
+        .content-widget-dark .view-all-link:hover {
+            color: #fff;
+        }
+</style>
+
+<!-- 1. BÖLÜM: ÜST İSTATİSTİK KARTLARI -->
+<div class="row g-4">
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-blue-light text-blue-main"><i class="fa-solid fa-users"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">Toplam Personel</div>
+                <div class="card-number">@ViewBag.TotalEmployee</div>
+                <div class="card-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Son 30 gün</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-green-light text-green-main"><i class="fa-solid fa-user-check"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">Aktif Personel</div>
+                <div class="card-number">@ViewBag.ActiveEmployee</div>
+                <div class="card-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Güncel</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-orange-light text-orange-main"><i class="fa-solid fa-user-clock"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">İzinli Personel</div>
+                <div class="card-number">@ViewBag.OnLeaveEmployee</div>
+                <div class="card-trend text-danger"><i class="fa-solid fa-arrow-trend-down"></i> Bugün</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-purple-light text-purple-main"><i class="fa-solid fa-sitemap"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">Toplam Departman</div>
+                <div class="card-number">@ViewBag.TotalDepartment</div>
+                <div class="card-trend" style="color: #a3aed1;"><i class="fa-solid fa-minus"></i> Değişiklik yok</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. BÖLÜM: YAKLAŞAN İZİNLER VE DUYURULAR -->
+<div class="row g-4 mt-2">
+    <!-- Yaklaşan İzinler (DİNAMİK) -->
+    <div class="col-lg-6">
+        <div class="content-widget content-widget-dark">
+            <div class="widget-title widget-title-dark">
+                Yaklaşan İzinler
+                <i class="fa-regular fa-calendar-check" style="color: #a3aed1;"></i>
+            </div>
+            <div class="widget-content">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="list-item">
+                            <div class="avatar-icon"><i class="fa-regular fa-user"></i></div>
+                            <div class="leave-info">
+                                <h6>@item.Employee?.FirstName @item.Employee?.LastName</h6>
+                                <p>@item.Employee?.Department?.Name</p>
+                            </div>
+                            <div class="leave-date">
+                                @item.StartDate.ToString("dd MMMM")<br>
+                                <span style="font-size: 12px; color: #a3aed1; font-weight: 500;">@item.StartDate.ToString("dddd")</span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted p-3">Yaklaşan izin kaydı bulunmamaktadır.</p>
+                }
+            </div>
+            <a asp-area="Personnel" asp-controller="LeaveRequest" asp-action="Index" class="view-all-link">Tüm izin taleplerini gör &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Duyurular (Açık Tema) -->
+    <div class="col-lg-6">
+        <div class="content-widget">
+            <div class="widget-title widget-title-light">
+                Duyurular
+                <i class="fa-solid fa-bullhorn text-blue-main"></i>
+            </div>
+            <div class="widget-content">
+                <div class="list-item flex-column">
+                    <span class="announcement-date">14 Temmuz 2026</span>
+                    <div class="announcement-title">
+                        Sistem Güncellemesi Hakkında <span class="new-dot"></span>
+                    </div>
+                    <p class="announcement-desc">PDKS sistemi üzerinde yapılan yeni güncellemeler başarıyla tamamlanmıştır.</p>
+                </div>
+            </div>
+            <a href="#" class="view-all-link">Tüm duyuruları gör &rarr;</a>
+        </div>
+    </div>
 </div>

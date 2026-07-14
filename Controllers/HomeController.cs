@@ -1,32 +1,37 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using PDKS.UI.Models;
+using Microsoft.EntityFrameworkCore; // .Include ve veritabaný iþlemleri için þart!
+using PDKS.Data.Contexts;
+using System.Linq;
 
 namespace PDKS.UI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(AppDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
+            // 1. ÝSTATÝSTÝKLERÝ ÇEKÝYORUZ
+            ViewBag.TotalEmployee = _context.Employees.Count();
+            ViewBag.ActiveEmployee = _context.Employees.Count(e => e.IsActive);
+            // Bugün izinli olanlarý buluyoruz (Baþlangýç bugünden küçük veya eþit, Bitiþ bugünden büyük veya eþit)
+            ViewBag.OnLeaveEmployee = _context.LeaveRequests.Count(l => l.StartDate <= DateTime.Now && l.EndDate >= DateTime.Now);
+            ViewBag.TotalDepartment = _context.Departments.Count();
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+            // 2. YAKLAÞAN ÝZÝNLERÝ ÇEKÝYORUZ (Sadece ileri tarihli olanlar)
+            var upcomingLeaves = _context.LeaveRequests
+                .Include(l => l.Employee) // Ýzin yapan kiþinin adýný almak için
+                .Where(l => l.StartDate > DateTime.Now)
+                .OrderBy(l => l.StartDate)
+                .Take(5) // En yakýndaki 5 tanesini al
+                .ToList();
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(upcomingLeaves); // Verileri Ana Sayfa'ya gönderiyoruz!
         }
     }
 }

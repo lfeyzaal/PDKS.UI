@@ -1,0 +1,246 @@
+﻿@model PDKS.Entities.Department
+
+@{
+    ViewData["Title"] = "Yeni Departman Ekle";
+}
+
+<style>
+    /* Premium Form Konteyneri */
+    .form-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        border-bottom: 2px solid #f4f7fe;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .form-header-icon {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(0, 181, 255, 0.1);
+        color: #00b5ff;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .form-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 24px;
+        margin: 0;
+    }
+
+    .form-subtitle {
+        color: #a3aed1;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .premium-label {
+        color: #2b3674;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .premium-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e0e5f2;
+        border-radius: 12px;
+        background-color: #f4f7fe;
+        color: #2b3674;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    textarea.premium-input {
+        min-height: 120px;
+        resize: none;
+    }
+
+    .premium-input:focus {
+        background-color: #ffffff;
+        border-color: #00b5ff;
+        box-shadow: 0 0 0 4px rgba(0, 181, 255, 0.1);
+        outline: none;
+    }
+
+    .text-danger {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e3342f;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .switch-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 0;
+        border-top: 1px solid #f4f7fe;
+        margin-top: 10px;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 28px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e0e5f2;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+    input:checked + .slider {
+        background-color: #05cd99;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+    .switch-label {
+        font-weight: 700;
+        color: #2b3674;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 25px;
+    }
+
+    .btn-cancel {
+        background-color: #f4f7fe;
+        color: #8f9bba;
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-cancel:hover {
+            background-color: #e0e5f2;
+            color: #2b3674;
+        }
+
+    .btn-save {
+        background-color: #00b5ff;
+        color: white;
+        border: none;
+        font-weight: 700;
+        padding: 14px 35px;
+        border-radius: 12px;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-save:hover {
+            background-color: #0096d6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 181, 255, 0.2);
+        }
+</style>
+
+<div class="form-card">
+    <div class="form-header">
+        <div class="form-header-icon">
+            <i class="fa-solid fa-folder-plus"></i>
+        </div>
+        <div>
+            <h2 class="form-title">Yeni Departman Ekle</h2>
+            <div class="form-subtitle">Şirketiniz için yeni bir departman oluşturun.</div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post">
+
+        <div class="form-group">
+            <label asp-for="Name" class="premium-label">Departman Adı</label>
+            <input asp-for="Name" class="premium-input" placeholder="Örn: İnsan Kaynakları, Bilgi İşlem..." />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="premium-label">Açıklama (İsteğe Bağlı)</label>
+            <textarea asp-for="Description" class="premium-input" placeholder="Bu departmanın görevleri ve amacı hakkında kısa bir not düşebilirsiniz..."></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="switch-wrapper">
+            <label class="switch">
+                <input asp-for="IsActive" type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">Bu departman sistemde aktif olsun mu?</span>
+        </div>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="btn-cancel">İptal</a>
+            <button type="submit" class="btn-save">
+                <i class="fa-solid fa-check"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

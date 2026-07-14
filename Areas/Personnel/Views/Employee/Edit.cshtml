@@ -1,0 +1,320 @@
+﻿@model PDKS.Entities.Employee
+
+@{
+    ViewData["Title"] = "Personel Düzenle";
+}
+
+<style>
+    /* Premium Form Konteyneri (Create ekranı ile aynı premium kalite) */
+    .form-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        border-bottom: 2px solid #f4f7fe;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .form-header-icon {
+        width: 50px;
+        height: 50px;
+        background-color: #fff4e5;
+        color: #ff9f43; /* Düzenleme ekranı olduğunu belli eden turuncu konsept */
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .form-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 24px;
+        margin: 0;
+    }
+
+    .form-subtitle {
+        color: #a3aed1;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 5px;
+    }
+
+    .section-title {
+        color: #2b3674;
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .section-title i {
+            color: #ff9f43;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .premium-label {
+        color: #2b3674;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .premium-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e0e5f2;
+        border-radius: 12px;
+        background-color: #f4f7fe;
+        color: #2b3674;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .premium-input:focus {
+            background-color: #ffffff;
+            border-color: #ff9f43;
+            box-shadow: 0 0 0 4px rgba(255, 159, 67, 0.1);
+            outline: none;
+        }
+
+    .text-danger {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e3342f;
+        margin-top: 5px;
+        display: block;
+    }
+
+    /* Switch Tasarımı */
+    .switch-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 10px 0;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 28px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e0e5f2;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+    input:checked + .slider {
+        background-color: #05cd99;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+    .switch-label {
+        font-weight: 700;
+        color: #2b3674;
+    }
+
+    /* Aksiyon Butonları */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 40px;
+        padding-top: 25px;
+        border-top: 2px solid #f4f7fe;
+    }
+
+    .btn-cancel {
+        background-color: #f4f7fe;
+        color: #8f9bba;
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-cancel:hover {
+            background-color: #e0e5f2;
+            color: #2b3674;
+        }
+
+    .btn-save {
+        background-color: #ff9f43; /* Güncelle butonu rengi */
+        color: white;
+        border: none;
+        font-weight: 700;
+        padding: 14px 35px;
+        border-radius: 12px;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-save:hover {
+            background-color: #e58e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 159, 67, 0.2);
+        }
+</style>
+
+<div class="form-card">
+    <div class="form-header">
+        <div class="form-header-icon">
+            <i class="fa-solid fa-user-pen"></i>
+        </div>
+        <div>
+            <h2 class="form-title">Personel Bilgilerini Düzenle</h2>
+            <div class="form-subtitle">@Model.FirstName @Model.LastName adlı personelin bilgilerini güncelliyorsunuz.</div>
+        </div>
+    </div>
+
+    <form asp-action="Edit" method="post">
+        <!-- İŞTE EN ÖNEMLİ KISIM: ID GİZLİ OLARAK TAŞINMALI -->
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row">
+            <!-- SOL SÜTUN -->
+            <div class="col-md-6 pe-md-4">
+                <div class="section-title">
+                    <i class="fa-regular fa-id-card"></i> Kişisel Bilgiler
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="IdentityNumber" class="premium-label"></label>
+                    <input asp-for="IdentityNumber" class="premium-input" maxlength="11" />
+                    <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FirstName" class="premium-label"></label>
+                            <input asp-for="FirstName" class="premium-input" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LastName" class="premium-label"></label>
+                            <input asp-for="LastName" class="premium-input" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="BirthDate" class="premium-label"></label>
+                    <input asp-for="BirthDate" type="date" class="premium-input" />
+                    <span asp-validation-for="BirthDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- SAĞ SÜTUN -->
+            <div class="col-md-6 ps-md-4 border-start">
+                <div class="section-title">
+                    <i class="fa-solid fa-briefcase"></i> İletişim & Kurum Bilgileri
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DepartmentId" class="premium-label">Departman</label>
+                    <select asp-for="DepartmentId" class="premium-input" asp-items="ViewBag.Departments">
+                        <option value="">-- Lütfen Departman Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="premium-label"></label>
+                    <input asp-for="PhoneNumber" class="premium-input" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email" class="premium-label"></label>
+                    <input asp-for="Email" type="email" class="premium-input" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="HireDate" class="premium-label"></label>
+                    <input asp-for="HireDate" type="date" class="premium-input" />
+                    <span asp-validation-for="HireDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-4">
+                    <div class="switch-wrapper">
+                        <label class="switch">
+                            <input asp-for="IsActive" type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="switch-label">Personel aktif mi?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="btn-cancel">İptal</a>
+            <button type="submit" class="btn-save">
+                <i class="fa-solid fa-arrows-rotate"></i> Değişiklikleri Kaydet
+            </button>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

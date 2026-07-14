@@ -1,0 +1,317 @@
+﻿@model IEnumerable<PDKS.Entities.Department>
+
+@{
+    ViewData["Title"] = "Departman Yönetimi";
+}
+
+<style>
+    /* Premium Tablo Konteyneri (Ortak Tasarım Dilini Koruyoruz) */
+    .table-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 22px;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    /* Modern Arama Çubuğu */
+    .search-box {
+        position: relative;
+        width: 320px;
+    }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a3aed1;
+            font-size: 15px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #e0e5f2;
+            border-radius: 12px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            color: #2b3674;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background-color: #f4f7fe;
+        }
+
+            .search-box input:focus {
+                background-color: #ffffff;
+                border-color: #00b5ff;
+                box-shadow: 0 0 0 3px rgba(0, 181, 255, 0.1);
+            }
+
+            .search-box input::placeholder {
+                color: #a3aed1;
+                font-weight: 500;
+            }
+
+    /* Ekleme Butonu - Departmanlar için Turkuaz Konsepti */
+    .btn-add-new {
+        background-color: #00b5ff;
+        color: white;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 12px 24px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+    }
+
+        .btn-add-new:hover {
+            background-color: #2b3674;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .premium-table th {
+            color: #8f9bba;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 0 20px 10px 20px;
+            border: none;
+        }
+
+        .premium-table tbody tr {
+            background-color: #f4f7fe;
+            transition: transform 0.2s ease;
+        }
+
+            .premium-table tbody tr:hover {
+                transform: scale(1.01);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            }
+
+        .premium-table td {
+            padding: 18px 20px;
+            color: #2b3674;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .premium-table tbody tr td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        .premium-table tbody tr td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+    /* Departman Rozeti Tasarımı */
+    .dept-name {
+        font-weight: 800;
+        color: #2b3674;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dept-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background-color: rgba(0, 181, 255, 0.1);
+        color: #00b5ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .dept-desc {
+        font-size: 13px;
+        color: #a3aed1;
+        font-weight: 500;
+        margin-top: 4px;
+    }
+
+    /* Çalışan Sayısı Rozeti */
+    .emp-count {
+        background-color: #4318ff;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .status-active {
+        background-color: #e6fced;
+        color: #05cd99;
+    }
+
+    .status-passive {
+        background-color: #fff4e5;
+        color: #ff9f43;
+    }
+
+    .action-btn {
+        background: white;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #a3aed1;
+        transition: 0.3s;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+
+        .action-btn.edit:hover {
+            color: #00b5ff;
+            background: #e0e5f2;
+        }
+
+        .action-btn.delete:hover {
+            color: #e3342f;
+            background: #fbeee8;
+        }
+</style>
+
+<div class="table-card">
+
+    <div class="page-header">
+        <h2 class="page-title">Departman Yönetimi</h2>
+        <div class="header-actions">
+            <!-- Canlı Arama -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="liveSearchInput" placeholder="Departman ara...">
+            </div>
+
+            <a asp-area="Personnel" asp-controller="Department" asp-action="Create" class="btn-add-new">
+                <i class="fa-solid fa-plus"></i> Yeni Departman
+            </a>
+        </div>
+    </div>
+
+    <table class="premium-table">
+        <thead>
+            <tr>
+                <th>Departman Bilgisi</th>
+                <th>Çalışan Sayısı</th>
+                <th>Durum</th>
+                <th class="text-end">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="dept-row">
+                        <td>
+                            <div class="dept-name">
+                                <div class="dept-icon"><i class="fa-solid fa-sitemap"></i></div>
+                                <div>
+                                    <div class="d-name-text">@item.Name</div>
+                                    <div class="dept-desc">@(string.IsNullOrEmpty(item.Description) ? "Açıklama girilmemiş" : item.Description)</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="emp-count">
+                                <i class="fa-solid fa-users me-1"></i> @(item.Employees != null ? item.Employees.Count : 0) Personel
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="status-badge status-active">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-passive">Pasif</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-area="Personnel" asp-controller="Department" asp-action="Edit" asp-route-id="@item.Id" class="action-btn edit" title="Düzenle">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <!-- Silme formuna AntiForgeryToken eklendi -->
+                            <form asp-area="Personnel" asp-controller="Department" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('@item.Name departmanı silinecek. Emin misiniz?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="action-btn delete" title="Sil">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr id="noDataRow">
+                    <td colspan="4" class="text-center py-5 text-muted fw-bold">
+                        Sistemde henüz kayıtlı departman bulunmamaktadır.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- CANLI ARAMA JAVASCRIPT KODU -->
+<script>
+    document.getElementById('liveSearchInput').addEventListener('keyup', function () {
+        let filter = this.value.toLocaleLowerCase('tr-TR');
+        let rows = document.querySelectorAll('.dept-row');
+
+        rows.forEach(row => {
+            let nameElement = row.querySelector('.d-name-text');
+            if (nameElement) {
+                let nameText = nameElement.textContent.toLocaleLowerCase('tr-TR');
+                row.style.display = nameText.includes(filter) ? '' : 'none';
+            }
+        });
+    });
+</script>

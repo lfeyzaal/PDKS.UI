@@ -20,16 +20,21 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// AREA ROTASI - Tek ve Doðru Rota
+app.MapAreaControllerRoute(
+    name: "Personnel",
+    areaName: "Personnel",
+    pattern: "Personnel/{controller=Employee}/{action=Index}/{id?}");
 
+// DEFAULT ROTA
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

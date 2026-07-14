@@ -1,47 +1,201 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PDKS.UI</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - PDKS Sistemi</title>
+
+    <!-- Modern ve Okunaklı Google Fontu: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Profesyonel İkon Seti (FontAwesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PDKS.UI.styles.css" asp-append-version="true" />
+
+    <style>
+        /* Temel Ayarlar ve Yazı Tipi */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7fe; /* Görseldeki açık ferah arkaplan */
+            overflow-x: hidden;
+            font-size: 15px; /* Okunaklı font boyutu */
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* --- SOL MENÜ (SIDEBAR) TASARIMI --- */
+        .sidebar {
+            width: 270px;
+            background-color: #0b1437; /* Görseldeki kurumsal lacivert */
+            color: white;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .sidebar-logo {
+            padding: 25px 20px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            list-style: none;
+            margin: 0;
+        }
+
+            .sidebar-menu li {
+                padding: 6px 20px;
+            }
+
+            .sidebar-menu a {
+                color: #a3aed1;
+                text-decoration: none;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                border-radius: 10px;
+                padding: 12px 15px;
+                transition: all 0.3s ease;
+            }
+
+                .sidebar-menu a:hover, .sidebar-menu a.active {
+                    background-color: #4318ff; /* Aktif butonun canlı mavisi */
+                    color: white;
+                }
+
+            .sidebar-menu i {
+                margin-right: 15px;
+                font-size: 1.2rem;
+                width: 25px;
+                text-align: center;
+            }
+
+        /* --- ANA İÇERİK VE ÜST BAR TASARIMI --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 25px 35px;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: transparent;
+        }
+
+        .welcome-text h4 {
+            color: #2b3674;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .welcome-text span {
+            color: #707eae;
+            font-size: 0.95rem;
+        }
+
+        .top-widgets {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            gap: 20px;
+            color: #2b3674;
+            font-weight: 500;
+        }
+
+            .top-widgets i {
+                color: #4318ff;
+            }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PDKS.UI</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+    <div class="dashboard-wrapper">
+
+        <!-- DİNAMİK MENÜ İÇİN C# KODU: Şu anki sayfanın Controller'ını yakalar -->
+        @{
+            var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+        }
+
+        <!-- SOL MENÜ -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-building-user"></i> PDKS Sistemi
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+            <ul class="sidebar-menu">
+                <!-- Hangi sayfadaysan, o menüye 'active' class'ı eklenir -->
+                <li><a href="/" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-house"></i> Ana Sayfa</a></li>
+
+                <li><a asp-area="Personnel" asp-controller="Employee" asp-action="Index" class="@(currentController == "Employee" ? "active" : "")"><i class="fa-solid fa-users"></i> Personeller</a></li>
+
+                <li><a asp-area="Personnel" asp-controller="Department" asp-action="Index" class="@(currentController == "Department" ? "active" : "")"><i class="fa-solid fa-sitemap"></i> Departmanlar</a></li>
+
+                <!-- DÜZELTİLEN LİNK: LeaveRequest controller'a bağlandı -->
+                <li><a asp-area="Personnel" asp-controller="LeaveRequest" asp-action="Index" class="@(currentController == "LeaveRequest" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i> İzin Talepleri</a></li>
+
+                <li><a href="#"><i class="fa-solid fa-business-time"></i> Mesai Takibi</a></li>
+                <li><a href="#"><i class="fa-solid fa-bullhorn"></i> Duyurular</a></li>
+            </ul>
+        </aside>
+
+        <!-- ANA EKRAN -->
+        <main class="main-content">
+
+            <!-- ÜST BİLGİ ALANI -->
+            <header class="topbar">
+                <div class="welcome-text">
+                    <h4>Hoş geldiniz, Feyza 👋</h4>
+                    <span>Personel takip ve yönetim sistemine hoş geldiniz.</span>
+                </div>
+
+                <!-- Tarih ve Hava Durumu -->
+                <div class="top-widgets">
+                    <div class="d-flex align-items-center gap-2 border-end pe-3">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="liveDate">14 Temmuz 2026, Salı</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-sun text-warning"></i>
+                        <span id="liveWeather">Körfez, 28°C</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SENİN KODLADIĞIN SAYFALAR BURANIN İÇİNDE GÖRÜNTÜLENECEK -->
+            <div class="content-card">
+                @RenderBody()
+            </div>
+
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - PDKS.UI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

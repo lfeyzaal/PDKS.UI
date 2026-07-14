@@ -1,0 +1,139 @@
+﻿@model PDKS.Entities.LeaveRequest
+@{
+    ViewData["Title"] = "İzin Talebi Oluştur";
+}
+
+<style>
+    /* Premium Form Kartı */
+    .form-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: auto;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .form-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #f4f7fe;
+        padding-bottom: 20px;
+    }
+
+    .form-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Premium Inputlar */
+    .premium-label {
+        font-weight: 700;
+        color: #2b3674;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .premium-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e0e5f2;
+        border-radius: 14px;
+        background: #fcfdfe;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #2b3674;
+    }
+
+        .premium-input:focus {
+            border-color: #4318ff;
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(67, 24, 255, 0.1);
+        }
+
+    /* Butonlar */
+    .btn-save {
+        background: #4318ff;
+        color: white;
+        padding: 14px 30px;
+        border-radius: 14px;
+        border: none;
+        font-weight: 700;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-save:hover {
+            background: #3010c9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
+        }
+
+    .btn-cancel {
+        color: #a3aed1;
+        font-weight: 600;
+        text-decoration: none;
+        margin-right: 20px;
+        transition: 0.3s;
+    }
+
+        .btn-cancel:hover {
+            color: #2b3674;
+        }
+</style>
+
+<div class="form-card">
+    <div class="form-header">
+        <h2 class="form-title"><i class="fa-solid fa-calendar-plus text-primary"></i> Yeni İzin Talebi Oluştur</h2>
+        <span style="color: #a3aed1; font-size: 14px;">Personel için gerekli izin detaylarını aşağıdan doldurabilirsiniz.</span>
+    </div>
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label class="premium-label">Personel Seçiniz</label>
+                <div class="input-group">
+                    <select asp-for="EmployeeId" class="premium-input" asp-items="ViewBag.Employees">
+                        <option value="">-- Personel Seçiniz --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <label class="premium-label">İzin Türü</label>
+                <select asp-for="LeaveType" class="premium-input" asp-items="ViewBag.LeaveTypes"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label class="premium-label">Başlangıç Tarihi</label>
+                <input asp-for="StartDate" type="date" class="premium-input" />
+            </div>
+            <div class="col-md-6 mb-4">
+                <label class="premium-label">Bitiş Tarihi</label>
+                <input asp-for="EndDate" type="date" class="premium-input" />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="premium-label">Gerekçe / Açıklama</label>
+            <textarea asp-for="Reason" class="premium-input" rows="4" placeholder="İzin gerekçenizi buraya detaylıca yazabilirsiniz..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center mt-3">
+            <a asp-action="Index" class="btn-cancel">İptal</a>
+            <button type="submit" class="btn-save">
+                <i class="fa-solid fa-paper-plane"></i> Talebi Gönder
+            </button>
+        </div>
+    </form>
+</div>

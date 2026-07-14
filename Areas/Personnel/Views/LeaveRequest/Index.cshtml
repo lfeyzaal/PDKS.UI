@@ -1,0 +1,173 @@
+﻿@model IEnumerable<PDKS.Entities.LeaveRequest>
+@{
+    ViewData["Title"] = "İzin Talepleri";
+}
+
+<style>
+    /* Premium Tablo Konteyneri */
+    .table-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 22px;
+    }
+
+    /* Premium Tablo */
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .premium-table tbody tr {
+            background-color: #f4f7fe;
+            transition: 0.3s;
+        }
+
+            .premium-table tbody tr:hover {
+                background-color: #eef2ff;
+            }
+
+        .premium-table td {
+            padding: 18px 20px;
+            color: #2b3674;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+    /* Butonlar ve Rozetler */
+    .btn-add-new {
+        background-color: #4318ff;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #2b3674;
+            color: white;
+        }
+
+    .action-btn {
+        background: white;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        color: #a3aed1;
+        cursor: pointer;
+        transition: 0.3s;
+        margin: 0 2px;
+    }
+
+    .btn-approve:hover {
+        color: #05cd99;
+        background: #e6fced;
+    }
+
+    .btn-reject:hover {
+        color: #ff5252;
+        background: #ffebee;
+    }
+
+    .btn-delete:hover {
+        color: #e3342f;
+        background: #fbeee8;
+    }
+
+    /* Profesyonel Status Rozetleri */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 12px;
+    }
+
+    .status-pending {
+        background-color: #fff4e5;
+        color: #ff9f43;
+    }
+    /* Bekliyor */
+    .status-approved {
+        background-color: #e6fced;
+        color: #05cd99;
+    }
+    /* Onay */
+    .status-rejected {
+        background-color: #ffebee;
+        color: #e3342f;
+    }
+    /* Red */
+</style>
+
+<div class="table-card">
+    <div class="page-header">
+        <h2 class="page-title">İzin Talepleri Yönetimi</h2>
+        <a asp-action="Create" class="btn-add-new"><i class="fa-solid fa-plus"></i> Yeni Talep Oluştur</a>
+    </div>
+
+    <table class="premium-table">
+        <thead>
+            <tr style="color: #8f9bba; font-size: 13px; text-transform: uppercase;">
+                <th>Personel</th>
+                <th>Departman</th>
+                <th>Tür</th>
+                <th>Tarih Aralığı</th>
+                <th>Durum</th>
+                <th class="text-end">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><strong>@item.Employee?.FirstName @item.Employee?.LastName</strong></td>
+                    <td>@item.Employee?.Department?.Name</td>
+                    <td><span class="badge bg-secondary">@item.LeaveType</span></td>
+                    <td>@item.StartDate.ToString("dd.MM.yyyy") - @item.EndDate.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <!-- Duruma göre renkler otomatik değişiyor -->
+                        <span class="status-badge @(item.Status == "Onaylandı" ? "status-approved" : item.Status == "Reddedildi" ? "status-rejected" : "status-pending")">
+                            @item.Status
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <!-- Onayla Butonu -->
+                        <form asp-action="Approve" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="action-btn btn-approve" title="Onayla"><i class="fa-solid fa-check"></i></button>
+                        </form>
+
+                        <!-- Reddet Butonu -->
+                        <form asp-action="Reject" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="action-btn btn-reject" title="Reddet"><i class="fa-solid fa-xmark"></i></button>
+                        </form>
+
+                        <!-- Sil Butonu -->
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Silmek istediğine emin misin?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="action-btn btn-delete" title="Sil"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

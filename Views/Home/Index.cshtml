@@ -351,56 +351,64 @@
 </style>
 
 <!-- ========================================== -->
-<!-- 1. BÖLÜM: ÜST İSTATİSTİK KARTLARI (SENİN KODUN) -->
+<!-- 1. BÖLÜM: ÜST İSTATİSTİK KARTLARI (LİNKLİ) -->
 <!-- ========================================== -->
 <div class="row g-4">
     <div class="col-xl-3 col-lg-6 col-md-6">
-        <div class="dash-card">
-            <div class="icon-box bg-blue-light text-blue-main"><i class="fa-solid fa-users"></i></div>
-            <div class="card-info">
-                <div class="card-title-text">Toplam Personel</div>
-                <div class="card-number">@ViewBag.TotalEmployee</div>
-                <div class="card-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Son 30 gün</div>
+        <a asp-area="Personnel" asp-controller="Employee" asp-action="Index" style="text-decoration: none; color: inherit; display: block;">
+            <div class="dash-card">
+                <div class="icon-box bg-blue-light text-blue-main"><i class="fa-solid fa-users"></i></div>
+                <div class="card-info">
+                    <div class="card-title-text">Toplam Personel</div>
+                    <div class="card-number">@ViewBag.TotalEmployee</div>
+                    <div class="card-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Son 30 gün</div>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-xl-3 col-lg-6 col-md-6">
-        <div class="dash-card">
-            <div class="icon-box bg-green-light text-green-main"><i class="fa-solid fa-user-check"></i></div>
-            <div class="card-info">
-                <div class="card-title-text">Aktif Personel</div>
-                <div class="card-number">@ViewBag.ActiveEmployee</div>
-                <div class="card-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Güncel</div>
+        <a asp-area="Personnel" asp-controller="Employee" asp-action="Index" style="text-decoration: none; color: inherit; display: block;">
+            <div class="dash-card">
+                <div class="icon-box bg-green-light text-green-main"><i class="fa-solid fa-user-check"></i></div>
+                <div class="card-info">
+                    <div class="card-title-text">Aktif Personel</div>
+                    <div class="card-number">@ViewBag.ActiveEmployee</div>
+                    <div class="card-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Güncel</div>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-xl-3 col-lg-6 col-md-6">
-        <div class="dash-card">
-            <div class="icon-box bg-orange-light text-orange-main"><i class="fa-solid fa-user-clock"></i></div>
-            <div class="card-info">
-                <div class="card-title-text">İzinli Personel</div>
-                <div class="card-number">@ViewBag.OnLeaveEmployee</div>
-                <div class="card-trend text-danger"><i class="fa-solid fa-arrow-trend-down"></i> Bugün</div>
+        <a asp-area="Personnel" asp-controller="LeaveRequest" asp-action="Index" style="text-decoration: none; color: inherit; display: block;">
+            <div class="dash-card">
+                <div class="icon-box bg-orange-light text-orange-main"><i class="fa-solid fa-user-clock"></i></div>
+                <div class="card-info">
+                    <div class="card-title-text">İzinli Personel</div>
+                    <div class="card-number">@ViewBag.OnLeaveEmployee</div>
+                    <div class="card-trend text-danger"><i class="fa-solid fa-arrow-trend-down"></i> Bugün</div>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-xl-3 col-lg-6 col-md-6">
-        <div class="dash-card">
-            <div class="icon-box bg-purple-light text-purple-main"><i class="fa-solid fa-sitemap"></i></div>
-            <div class="card-info">
-                <div class="card-title-text">Toplam Departman</div>
-                <div class="card-number">@ViewBag.TotalDepartment</div>
-                <div class="card-trend" style="color: #a3aed1;"><i class="fa-solid fa-minus"></i> Değişiklik yok</div>
+        <a asp-area="Personnel" asp-controller="Department" asp-action="Index" style="text-decoration: none; color: inherit; display: block;">
+            <div class="dash-card">
+                <div class="icon-box bg-purple-light text-purple-main"><i class="fa-solid fa-sitemap"></i></div>
+                <div class="card-info">
+                    <div class="card-title-text">Toplam Departman</div>
+                    <div class="card-number">@ViewBag.TotalDepartment</div>
+                    <div class="card-trend" style="color: #a3aed1;"><i class="fa-solid fa-minus"></i> Değişiklik yok</div>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
 <!-- ========================================== -->
-<!-- 2. BÖLÜM: YAKLAŞAN İZİNLER VE DUYURULAR (SENİN KODUN) -->
+<!-- 2. BÖLÜM: YAKLAŞAN İZİNLER VE DUYURULAR -->
 <!-- ========================================== -->
 <div class="row g-4 mt-2">
     <!-- Yaklaşan İzinler (DİNAMİK) -->
@@ -480,7 +488,7 @@
 
 
 <!-- ========================================== -->
-<!-- 3. BÖLÜM: YENİ EKLENEN GİRİŞ/ÇIKIŞ VE MESAİ BÖLÜMÜ -->
+<!-- 3. BÖLÜM: YENİ EKLENEN GİRİŞ/ÇIKIŞ VE MESAİ -->
 <!-- ========================================== -->
 <div class="row g-4 mt-2">
 
@@ -523,7 +531,6 @@
                                         }
                                         else
                                         {
-
                                             <span class="text-muted">-</span>
                                         }
                                     </td>
@@ -534,7 +541,6 @@
                                         }
                                         else
                                         {
-
                                             <span class="text-muted">-</span>
                                         }
                                     </td>
@@ -542,7 +548,6 @@
                                         @(string.IsNullOrEmpty(item.Note) ? "-" : item.Note)
                                     </td>
                                 </tr>
-                            }
                             }
                         </tbody>
                     </table>
@@ -593,5 +598,4 @@
             <a asp-area="Personnel" asp-controller="OvertimeRequest" asp-action="Index" class="view-all-link">Mesai paneline git &rarr;</a>
         </div>
     </div>
-
 </div>

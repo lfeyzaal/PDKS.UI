@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // .Include ve veritabaný iþlemleri için þart!
+using Microsoft.EntityFrameworkCore;
 using PDKS.Data.Contexts;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization; // Güvenlik için gerekli kütüphane
 
 namespace PDKS.UI.Controllers
 {
+    [Authorize] // ÝÞTE SÝHÝRLÝ KÝLÝT! Giriþ yapmayan kimse bu sayfayý göremez.
     public class HomeController : Controller
     {
         private readonly AppDbContext _context;
@@ -19,11 +21,13 @@ namespace PDKS.UI.Controllers
             // 1. ÝSTATÝSTÝKLERÝ ÇEKÝYORUZ
             ViewBag.TotalEmployee = _context.Employees.Count();
             ViewBag.ActiveEmployee = _context.Employees.Count(e => e.IsActive);
-            // Bugün izinli olanlarý buluyoruz (Baþlangýç bugünden küçük veya eþit, Bitiþ bugünden büyük veya eþit)
+
+            // Bugün izinli olanlarý buluyoruz
             ViewBag.OnLeaveEmployee = _context.LeaveRequests.Count(l => l.StartDate <= DateTime.Now && l.EndDate >= DateTime.Now);
+
             ViewBag.TotalDepartment = _context.Departments.Count();
 
-            // 2. YAKLAÞAN ÝZÝNLERÝ ÇEKÝYORUZ (Sadece ileri tarihli olanlar)
+            // 2. YAKLAÞAN ÝZÝNLERÝ ÇEKÝYORUZ
             var upcomingLeaves = _context.LeaveRequests
                 .Include(l => l.Employee) // Ýzin yapan kiþinin adýný almak için
                 .Where(l => l.StartDate > DateTime.Now)

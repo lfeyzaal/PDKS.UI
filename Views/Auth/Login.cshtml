@@ -1,0 +1,149 @@
+﻿@model PDKS.UI.Models.LoginViewModel
+@{
+    // Giriş sayfasında yandaki menülerin (Layout) görünmesini istemediğimiz için null yapıyoruz.
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sisteme Giriş - PDKS</title>
+    <!-- Bootstrap ve İkon kütüphaneleri -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        body {
+            background: #f4f7fe; /* Dashboard arkaplan rengiyle aynı */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            transition: transform 0.3s ease;
+        }
+
+            .login-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .login-title {
+            color: #2b3674;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+
+            .form-control:focus {
+                border-color: #4318ff;
+                box-shadow: 0 0 0 0.2rem rgba(67, 24, 255, 0.15);
+                background-color: #ffffff;
+            }
+
+        .input-group-text {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .btn-login {
+            background: #4318ff;
+            color: white;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 700;
+            width: 100%;
+            border: none;
+            transition: 0.3s;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+            .btn-login:hover {
+                background: #2b3674;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(67, 24, 255, 0.3);
+            }
+
+        .icon-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+            .icon-container i {
+                font-size: 55px;
+                color: #4318ff;
+                background: #f4f7fe;
+                padding: 20px;
+                border-radius: 50%;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="icon-container">
+            <i class="fa-solid fa-fingerprint"></i>
+        </div>
+        <h3 class="login-title">PDKS Giriş</h3>
+
+        <!-- Giriş Formu -->
+        <form asp-controller="Auth" asp-action="Login" method="post">
+            <!-- Hata mesajları buraya gelecek -->
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center fw-bold" style="font-size:14px;"></div>
+
+            <!-- E-posta Alanı -->
+            <div class="mb-4">
+                <label asp-for="Email" class="form-label fw-bold" style="color: #a3aed1; font-size:14px;">E-posta Adresi</label>
+                <div class="input-group">
+                    <span class="input-group-text border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
+                    <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="ornek@sirket.com" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger" style="font-size:12px; font-weight:600;"></span>
+            </div>
+
+            <!-- Şifre Alanı -->
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label fw-bold" style="color: #a3aed1; font-size:14px;">Şifre</label>
+                <div class="input-group">
+                    <span class="input-group-text border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                    <input asp-for="Password" type="password" class="form-control border-start-0 ps-0" placeholder="••••••••" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger" style="font-size:12px; font-weight:600;"></span>
+            </div>
+
+            <!-- Beni Hatırla -->
+            <div class="mb-4 form-check">
+                <input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck" />
+                <label asp-for="RememberMe" class="form-check-label fw-bold" style="color: #a3aed1; font-size: 14px;" for="rememberMeCheck">
+                    Oturumu açık tut
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-login">Sisteme Gir <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i></button>
+        </form>
+    </div>
+
+</body>
+</html>

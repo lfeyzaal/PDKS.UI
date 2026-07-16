@@ -259,20 +259,27 @@
                     <input asp-for="BirthDate" type="date" class="premium-input" />
                     <span asp-validation-for="BirthDate" class="text-danger"></span>
                 </div>
+
+                <div class="form-group">
+                    <label asp-for="DepartmentId" class="premium-label">Departman</label>
+                    <select asp-for="DepartmentId" class="premium-input" asp-items="ViewBag.Departments">
+                        <option value="">-- Lütfen Departman Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                </div>
             </div>
 
             <!-- SAĞ SÜTUN: İletişim ve Kurum Bilgileri -->
-            <div class="form-group">
-                <label asp-for="DepartmentId" class="premium-label">Departman</label>
-                <!-- Tasarımı bozmaması için premium-input sınıfını kullandık -->
-                <select asp-for="DepartmentId" class="premium-input" asp-items="ViewBag.Departments">
-                    <option value="">-- Lütfen Departman Seçiniz --</option>
-                </select>
-                <span asp-validation-for="DepartmentId" class="text-danger"></span>
-            </div>
             <div class="col-md-6 ps-md-4 border-start">
                 <div class="section-title">
                     <i class="fa-solid fa-briefcase"></i> İletişim & Kurum Bilgileri
+                </div>
+
+                <!-- YENİ EKLENEN UNVAN ALANI -->
+                <div class="form-group">
+                    <label asp-for="Title" class="premium-label"></label>
+                    <input asp-for="Title" class="premium-input" placeholder="Örn: Müdür, Uzman..." />
+                    <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
@@ -317,7 +324,6 @@
     </form>
 </div>
 
-<!-- Form doğrulamalarının sayfayı yenilemeden anlık çalışması için (Gerçek profesyonellik) -->
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

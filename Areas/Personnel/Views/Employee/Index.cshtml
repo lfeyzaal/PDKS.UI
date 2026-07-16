@@ -181,7 +181,7 @@
         border-radius: 8px;
     }
 
-    /* Durum Rozetleri (Badges) */
+    /* Durum Rozetleri */
     .status-badge {
         padding: 6px 14px;
         border-radius: 30px;
@@ -223,6 +223,11 @@
         .action-btn.delete:hover {
             color: #e3342f;
             background: #fbeee8;
+        }
+
+        .action-btn.info:hover {
+            color: #0984e3;
+            background: #e3f2fd;
         }
 </style>
 
@@ -274,7 +279,6 @@
                         </td>
                         <td>@item.IdentityNumber</td>
                         <td>
-                            <!-- DÜZELTİLDİ: Artık veri varsa ismini gösteriyor, yoksa Atanmadı yazıyor -->
                             @if (item.Department != null)
                             {
                                 <span class="dept-badge"><i class="fa-solid fa-sitemap"></i> @item.Department.Name</span>
@@ -297,6 +301,11 @@
                             }
                         </td>
                         <td class="text-end">
+                            <!-- DETAY BUTONU EKLENDİ -->
+                            <a asp-area="Personnel" asp-controller="Employee" asp-action="Details" asp-route-id="@item.Id" class="action-btn info" title="Detay">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+
                             <a asp-area="Personnel" asp-controller="Employee" asp-action="Edit" asp-route-id="@item.Id" class="action-btn edit" title="Düzenle">
                                 <i class="fa-solid fa-pen"></i>
                             </a>

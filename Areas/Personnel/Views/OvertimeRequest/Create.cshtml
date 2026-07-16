@@ -1,0 +1,147 @@
+﻿@model PDKS.Entities.OvertimeRequest
+@{
+    ViewData["Title"] = "Yeni Mesai Talebi";
+}
+
+<style>
+    .form-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .premium-form-card {
+        background: white;
+        width: 100%;
+        max-width: 700px;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        border-top: 5px solid #4318ff;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .form-header h3 {
+            color: #2b3674;
+            font-weight: 800;
+        }
+
+        .form-header p {
+            color: #a3aed1;
+            font-size: 0.95rem;
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #2b3674;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .custom-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+        color: #2b3674;
+        transition: all 0.3s ease;
+        width: 100%;
+        background: #f8f9fe;
+    }
+
+        .custom-input:focus {
+            border-color: #4318ff;
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(67, 24, 255, 0.1);
+        }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #4318ff 0%, #865cff 100%);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        font-size: 1rem;
+        transition: all 0.3s;
+        margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(67, 24, 255, 0.2);
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 24, 255, 0.4);
+        }
+
+    .btn-back {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #a3aed1;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .btn-back:hover {
+            color: #2b3674;
+        }
+</style>
+
+<div class="form-wrapper">
+    <div class="premium-form-card">
+        <div class="form-header">
+            <h3>Yeni Mesai Talebi Oluştur</h3>
+            <p>Personel için mesai giriş detaylarını eksiksiz doldurunuz.</p>
+        </div>
+
+        <form asp-action="Create" method="post">
+
+            <div class="mb-4">
+                <label class="form-label"><i class="fa-solid fa-user-tie me-2 text-primary"></i>Personel Seçimi</label>
+                <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="custom-input form-select">
+                    <option value="">-- Lütfen Personel Seçin --</option>
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger" style="font-size: 0.8rem;"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label"><i class="fa-regular fa-calendar-days me-2 text-primary"></i>Mesai Tarihi</label>
+                <input asp-for="RequestDate" type="date" class="custom-input" />
+                <span asp-validation-for="RequestDate" class="text-danger" style="font-size: 0.8rem;"></span>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa-regular fa-clock me-2 text-primary"></i>Başlangıç Saati</label>
+                    <input asp-for="StartTime" type="time" class="custom-input" />
+                    <span asp-validation-for="StartTime" class="text-danger" style="font-size: 0.8rem;"></span>
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label class="form-label"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>Bitiş Saati</label>
+                    <input asp-for="EndTime" type="time" class="custom-input" />
+                    <span asp-validation-for="EndTime" class="text-danger" style="font-size: 0.8rem;"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label"><i class="fa-solid fa-align-left me-2 text-primary"></i>Mesai Gerekçesi</label>
+                <textarea asp-for="Reason" class="custom-input" rows="3" placeholder="Örn: Hafta sonu sunucu bakımı ve güncellemeleri..."></textarea>
+                <span asp-validation-for="Reason" class="text-danger" style="font-size: 0.8rem;"></span>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-paper-plane me-2"></i> Talebi Kaydet ve Onaya Gönder
+            </button>
+            <a asp-action="Index" class="btn-back"><i class="fa-solid fa-arrow-left me-2"></i> Listeye Geri Dön</a>
+
+        </form>
+    </div>
+</div>

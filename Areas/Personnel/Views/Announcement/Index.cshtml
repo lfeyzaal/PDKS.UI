@@ -1,0 +1,198 @@
+﻿@model IEnumerable<PDKS.Entities.Announcement>
+@{
+    ViewData["Title"] = "Şirket Duyuruları";
+}
+
+<style>
+    /* ÜST BAR TASARIMI */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .page-title {
+        color: #1e293b;
+        font-weight: 800;
+        font-size: 2rem;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* PREMİUM BUTON */
+    .btn-premium {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            color: white;
+            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
+        }
+
+    /* IZGARA (GRID) SİSTEMİ - Kartları yan yana dizer */
+    .announcement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+    }
+
+    /* MODERN KART TASARIMI */
+    .announcement-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255,255,255,0.5);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+        /* Kartın solundaki estetik renkli çizgi */
+        .announcement-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(to bottom, #6366f1, #a855f7);
+            border-radius: 24px 0 0 24px;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.1);
+        }
+
+    /* KART İÇERİK TİPOGRAFİSİ */
+    .card-date {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        padding: 6px 12px;
+        border-radius: 20px;
+        width: fit-content;
+    }
+
+    .card-title {
+        color: #0f172a;
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+
+    .card-content {
+        color: #475569;
+        font-size: 1rem;
+        line-height: 1.7;
+        flex-grow: 1;
+        margin-bottom: 25px;
+    }
+
+    /* ALT KISIM (Silme Butonu) */
+    .card-footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 20px;
+        mt-auto;
+    }
+
+    .btn-delete {
+        background: white;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+    /* BOŞ DURUM TASARIMI */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 30px;
+        color: #94a3b8;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.03);
+        border: 2px dashed #e2e8f0;
+    }
+</style>
+
+<div class="dashboard-header">
+    <h2 class="page-title">Şirket İçi Duyurular</h2>
+    <a asp-action="Create" class="btn-premium">
+        <i class="fa-solid fa-feather-pointed"></i> Yeni Yayın Oluştur
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <div style="background: #f8fafc; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+            <i class="fa-regular fa-paper-plane" style="font-size: 2.5rem; color: #6366f1;"></i>
+        </div>
+        <h4 style="color: #1e293b; font-weight: 700; margin-bottom: 10px;">Henüz Ses Yok</h4>
+        <p style="font-size: 1.1rem;">Personeliniz için yayınlanmış aktif bir duyuru bulunmuyor.<br>İlk duyuruyu oluşturarak iletişimi başlatabilirsiniz.</p>
+    </div>
+}
+else
+{
+    <div class="announcement-grid">
+        @foreach (var item in Model)
+        {
+            <div class="announcement-card">
+                <div class="card-date">
+                    <i class="fa-regular fa-clock text-primary"></i> @item.CreatedDate.ToString("dd MMMM yyyy - HH:mm")
+                </div>
+                <h3 class="card-title">@item.Title</h3>
+                <div class="card-content">
+                    @item.Content
+                </div>
+                <div class="card-footer-actions">
+                    <form asp-action="Delete" method="post" onsubmit="return confirm('Bu duyuruyu tamamen kaldırmak istediğinize emin misiniz? Bu işlem geri alınamaz.');">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn-delete"><i class="fa-regular fa-trash-can"></i> Kaldır</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}

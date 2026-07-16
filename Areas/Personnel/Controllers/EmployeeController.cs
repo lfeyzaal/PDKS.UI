@@ -84,18 +84,21 @@ namespace PDKS.UI.Areas.Personnel.Controllers
             return View(employee);
         }
 
-        // 6. PERSONEL SİLME (POST) - HATA DÜZELTİLDİ: [ValidateAntiForgeryToken] EKLENDİ
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        // 6. PERSONEL DETAYI (YENİ EKLENDİ)
+        public async Task<IActionResult> Details(int? id)
         {
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee != null)
-            {
-                _context.Employees.Remove(employee);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
+            if (id == null) return NotFound();
+
+            var employee = await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.Attendances)
+                .Include(e => e.LeaveRequests)
+                .Include(e => e.OvertimeRequests)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null) return NotFound();
+
+            return View(employee);
         }
     }
 }

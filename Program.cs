@@ -26,13 +26,12 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-// AREA ROTASI - Tek ve Doðru Rota
-app.MapAreaControllerRoute(
-    name: "Personnel",
-    areaName: "Personnel",
-    pattern: "Personnel/{controller=Employee}/{action=Index}/{id?}");
+// --- BÜTÜN ALANLARI VE CONTROLLERLARI OTOMATÝK TANIYAN ROUTE ---
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-// DEFAULT ROTA
+// --- ANA (DEFAULT) ROTA ---
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PDKS Sistemi</title>
 
-    <!-- Modern ve Okunaklı Google Fontu: Inter -->
+    <!-- Google Fontu: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Profesyonel İkon Seti (FontAwesome) -->
+    <!-- İkon Seti (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Bootstrap 5 -->
@@ -16,12 +16,11 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
-        /* Temel Ayarlar ve Yazı Tipi */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7fe; /* Görseldeki açık ferah arkaplan */
+            background-color: #f4f7fe;
             overflow-x: hidden;
-            font-size: 15px; /* Okunaklı font boyutu */
+            font-size: 15px;
         }
 
         .dashboard-wrapper {
@@ -30,10 +29,10 @@
             min-height: 100vh;
         }
 
-        /* --- SOL MENÜ (SIDEBAR) TASARIMI --- */
+        /* Sidebar Tasarımı */
         .sidebar {
             width: 270px;
-            background-color: #0b1437; /* Görseldeki kurumsal lacivert */
+            background-color: #0b1437;
             color: white;
             flex-shrink: 0;
             display: flex;
@@ -74,7 +73,7 @@
             }
 
                 .sidebar-menu a:hover, .sidebar-menu a.active {
-                    background-color: #4318ff; /* Aktif butonun canlı mavisi */
+                    background-color: #4318ff;
                     color: white;
                 }
 
@@ -85,7 +84,7 @@
                 text-align: center;
             }
 
-        /* --- ANA İÇERİK VE ÜST BAR TASARIMI --- */
+        /* Ana İçerik */
         .main-content {
             flex-grow: 1;
             padding: 25px 35px;
@@ -138,8 +137,6 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-
-        <!-- DİNAMİK MENÜ İÇİN C# KODU: Şu anki sayfanın Controller'ını yakalar -->
         @{
             var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
         }
@@ -150,49 +147,38 @@
                 <i class="fa-solid fa-building-user"></i> PDKS Sistemi
             </div>
             <ul class="sidebar-menu">
-                <!-- Hangi sayfadaysan, o menüye 'active' class'ı eklenir -->
                 <li><a href="/" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-house"></i> Ana Sayfa</a></li>
-
                 <li><a asp-area="Personnel" asp-controller="Employee" asp-action="Index" class="@(currentController == "Employee" ? "active" : "")"><i class="fa-solid fa-users"></i> Personeller</a></li>
-
                 <li><a asp-area="Personnel" asp-controller="Department" asp-action="Index" class="@(currentController == "Department" ? "active" : "")"><i class="fa-solid fa-sitemap"></i> Departmanlar</a></li>
-
-                <!-- DÜZELTİLEN LİNK: LeaveRequest controller'a bağlandı -->
                 <li><a asp-area="Personnel" asp-controller="LeaveRequest" asp-action="Index" class="@(currentController == "LeaveRequest" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i> İzin Talepleri</a></li>
 
-                <li><a href="#"><i class="fa-solid fa-business-time"></i> Mesai Takibi</a></li>
-                <li><a href="#"><i class="fa-solid fa-bullhorn"></i> Duyurular</a></li>
+                <li><a asp-area="Personnel" asp-controller="OvertimeRequest" asp-action="Index" class="@(currentController == "OvertimeRequest" ? "active" : "")"><i class="fa-solid fa-clock"></i> <span>Mesai Takibi</span></a></li>
+
+                <li><a asp-area="Personnel" asp-controller="Attendance" asp-action="Index" class="@(currentController == "Attendance" ? "active" : "")"><i class="fa-solid fa-fingerprint"></i> <span>Giriş / Çıkışlar</span></a></li>
+
+                <!-- DÜZELTİLEN DUYURULAR LİNKİ BURASI -->
+                <li><a asp-area="Personnel" asp-controller="Announcement" asp-action="Index" class="@(currentController == "Announcement" ? "active" : "")"><i class="fa-solid fa-bullhorn"></i> <span>Duyurular</span></a></li>
             </ul>
         </aside>
 
         <!-- ANA EKRAN -->
         <main class="main-content">
-
-            <!-- ÜST BİLGİ ALANI -->
             <header class="topbar">
                 <div class="welcome-text">
                     <h4>Hoş geldiniz, Feyza 👋</h4>
                     <span>Personel takip ve yönetim sistemine hoş geldiniz.</span>
                 </div>
-
-                <!-- Tarih ve Hava Durumu -->
                 <div class="top-widgets">
                     <div class="d-flex align-items-center gap-2 border-end pe-3">
                         <i class="fa-regular fa-calendar"></i>
-                        <span id="liveDate">14 Temmuz 2026, Salı</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-sun text-warning"></i>
-                        <span id="liveWeather">Körfez, 28°C</span>
+                        <span>16 Temmuz 2026, Perşembe</span>
                     </div>
                 </div>
             </header>
 
-            <!-- SENİN KODLADIĞIN SAYFALAR BURANIN İÇİNDE GÖRÜNTÜLENECEK -->
             <div class="content-card">
                 @RenderBody()
             </div>
-
         </main>
     </div>
 

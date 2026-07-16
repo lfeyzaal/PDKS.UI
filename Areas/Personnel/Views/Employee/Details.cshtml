@@ -1,0 +1,81 @@
+﻿@model PDKS.Entities.Employee
+@{
+    ViewData["Title"] = "Personel Detayları";
+}
+
+<style>
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .nav-tabs .nav-link {
+        color: #a3aed1;
+        font-weight: 700;
+        border: none;
+        padding: 15px 25px;
+    }
+
+        .nav-tabs .nav-link.active {
+            color: #4318ff;
+            border-bottom: 3px solid #4318ff;
+            background: transparent;
+        }
+</style>
+
+<div class="row g-4">
+    <!-- SOL: PROFİL KARTI -->
+    <div class="col-lg-4">
+        <div class="profile-card">
+            <div class="text-center mb-4">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2rem; font-weight: bold;">
+                    @(Model.FirstName.Substring(0, 1))
+                </div>
+                <h3>@Model.FirstName @Model.LastName</h3>
+                <p class="text-muted">@Model.Department?.Name</p>
+                <span class="badge bg-success">@(Model.IsActive ? "Aktif" : "Pasif")</span>
+            </div>
+            <hr>
+            <p><strong>E-posta:</strong> @Model.Email</p>
+            <p><strong>Telefon:</strong> @Model.PhoneNumber</p>
+            <p><strong>İşe Giriş:</strong> @Model.HireDate.ToString("dd MMM yyyy")</p>
+        </div>
+    </div>
+
+    <!-- SAĞ: SEKMELER -->
+    <div class="col-lg-8">
+        <div class="profile-card">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#attendance">Giriş-Çıkışlar</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#leaves">İzinler</button></li>
+            </ul>
+
+            <div class="tab-content pt-4">
+                <div class="tab-pane fade show active" id="attendance">
+                    <table class="table">
+                        <thead><tr><th>Tarih</th><th>Giriş</th><th>Çıkış</th></tr></thead>
+                        <tbody>
+                            @foreach (var item in Model.Attendances.OrderByDescending(x => x.Date).Take(10))
+                            {
+                                <tr><td>@item.Date.ToString("dd.MM.yyyy")</td><td>@item.CheckInTime</td><td>@item.CheckOutTime</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="leaves">
+                    <table class="table">
+                        <thead><tr><th>Başlangıç</th><th>Bitiş</th><th>Durum</th></tr></thead>
+                        <tbody>
+                            @foreach (var item in Model.LeaveRequests)
+                            {
+                                <tr><td>@item.StartDate.ToString("dd.MM.yyyy")</td><td>@item.EndDate.ToString("dd.MM.yyyy")</td><td>@item.Status</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,244 @@
+﻿@model IEnumerable<PDKS.Entities.Attendance>
+@{
+    ViewData["Title"] = "Giriş Çıkış Takibi";
+}
+
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+    /* Buton Tasarımları */
+    .btn-premium {
+        background: linear-gradient(135deg, #4318ff 0%, #865cff 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(67, 24, 255, 0.2);
+        transition: 0.3s;
+    }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 6px 20px rgba(67, 24, 255, 0.4);
+        }
+
+    .btn-excel {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        transition: 0.3s;
+    }
+
+        .btn-excel:hover {
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+    .table-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .custom-table thead th {
+            color: #a3aed1;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0 15px 10px 15px;
+            border: none;
+        }
+
+        .custom-table tbody tr {
+            background: #f8f9fe;
+            transition: all 0.2s ease;
+        }
+
+            .custom-table tbody tr:hover {
+                transform: scale(1.01);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+            }
+
+        .custom-table tbody td {
+            padding: 15px;
+            border: none;
+            color: #2b3674;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+            .custom-table tbody td:first-child {
+                border-radius: 12px 0 0 12px;
+            }
+
+            .custom-table tbody td:last-child {
+                border-radius: 0 12px 12px 0;
+            }
+
+    .time-badge {
+        background: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        border: 1px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .in-time {
+        color: #10b981;
+    }
+
+    .out-time {
+        color: #ef4444;
+    }
+
+    .action-btn {
+        background: white;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        color: #ef4444;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: 0.2s;
+    }
+
+        .action-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+</style>
+
+<div class="dashboard-header">
+    <h2 class="page-title">Personel Giriş Çıkış Kayıtları</h2>
+
+    <div class="d-flex align-items-center gap-3">
+        <!-- ARAMA FORMU -->
+        <form asp-action="Index" method="get" class="d-flex gap-2">
+            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
+                   class="form-control" placeholder="Personel ara..."
+                   style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 15px; width: 220px;">
+            <button type="submit" class="btn btn-primary" style="border-radius: 12px; background: #4318ff; border: none;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"]?.ToString()))
+            {
+                <a asp-action="Index" class="btn btn-secondary" style="border-radius: 12px;"><i class="fa-solid fa-xmark"></i></a>
+            }
+        </form>
+
+        <!-- EXCEL BUTONU -->
+        <a asp-action="ExportToExcel" class="btn-excel">
+            <i class="fa-solid fa-file-excel"></i> Excel
+        </a>
+
+        <!-- YENİ KAYIT BUTONU -->
+        <a asp-action="Create" class="btn-premium">
+            <i class="fa-solid fa-right-to-bracket"></i> Yeni Kayıt Ekle
+        </a>
+    </div>
+</div>
+
+<div class="table-card">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5" style="color: #a3aed1;">
+            <i class="fa-solid fa-clipboard-user mb-3" style="font-size: 3rem;"></i>
+            <h5>Henüz giriş/çıkış kaydı bulunmuyor.</h5>
+        </div>
+    }
+    else
+    {
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Personel</th>
+                    <th>Tarih</th>
+                    <th>Giriş Saati</th>
+                    <th>Çıkış Saati</th>
+                    <th>Not</th>
+                    <th class="text-end">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">
+                                    @(item.Employee?.FirstName?.Substring(0, 1) ?? "P")
+                                </div>
+                                <span style="font-weight: 700;">@item.Employee?.FirstName</span>
+                            </div>
+                        </td>
+                        <td>@item.Date.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (item.CheckInTime.HasValue)
+                            {
+                                <span class="time-badge in-time"><i class="fa-solid fa-arrow-right-to-bracket"></i> @item.CheckInTime.Value.ToString(@"hh\:mm")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.CheckOutTime.HasValue)
+                            {
+                                <span class="time-badge out-time"><i class="fa-solid fa-arrow-right-from-bracket"></i> @item.CheckOutTime.Value.ToString(@"hh\:mm")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td style="color: #a3aed1; font-size: 0.9rem;">@(item.Note ?? "-")</td>
+                        <td class="text-end">
+                            <form asp-action="Delete" method="post" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                <inalue="@item.Id" />
+                                <button type="submit" class="action-btn" title="Sil"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

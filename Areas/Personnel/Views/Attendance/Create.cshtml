@@ -1,0 +1,113 @@
+﻿@model PDKS.Entities.Attendance
+@{
+    ViewData["Title"] = "Giriş Çıkış Ekle";
+}
+
+<style>
+    .form-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .premium-form-card {
+        background: white;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        border-top: 5px solid #10b981;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .form-header h3 {
+            color: #2b3674;
+            font-weight: 800;
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #2b3674;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .custom-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 15px;
+        width: 100%;
+        background: #f8f9fe;
+        transition: 0.3s;
+    }
+
+        .custom-input:focus {
+            border-color: #10b981;
+            background: white;
+            outline: none;
+        }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        transition: 0.3s;
+        margin-top: 20px;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+</style>
+
+<div class="form-wrapper">
+    <div class="premium-form-card">
+        <div class="form-header">
+            <h3>Giriş / Çıkış Kaydı</h3>
+        </div>
+
+        <form asp-action="Create" method="post">
+            <div class="mb-4">
+                <label class="form-label"><i class="fa-solid fa-user me-2 text-success"></i>Personel</label>
+                <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="custom-input form-select">
+                    <option value="">-- Personel Seçin --</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label"><i class="fa-regular fa-calendar me-2 text-success"></i>Tarih</label>
+                <input asp-for="Date" type="date" class="custom-input" />
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-6">
+                    <label class="form-label"><i class="fa-solid fa-arrow-right-to-bracket me-2 text-success"></i>Giriş Saati</label>
+                    <input asp-for="CheckInTime" type="time" class="custom-input" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label"><i class="fa-solid fa-arrow-right-from-bracket me-2 text-danger"></i>Çıkış Saati</label>
+                    <input asp-for="CheckOutTime" type="time" class="custom-input" />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label"><i class="fa-solid fa-note-sticky me-2 text-success"></i>Not (Opsiyonel)</label>
+                <input asp-for="Note" type="text" class="custom-input" placeholder="Örn: Trafik yoğunluğu sebebiyle geç kalındı..." />
+            </div>
+
+            <button type="submit" class="btn-submit">Kaydet</button>
+            <a asp-action="Index" class="d-block text-center mt-3 text-muted" style="text-decoration:none;">Geri Dön</a>
+        </form>
+    </div>
+</div>

@@ -1,9 +1,19 @@
-﻿@model PDKS.Entities.OvertimeRequest
+﻿@using Microsoft.EntityFrameworkCore
+@using PDKS.Data.Contexts
+@inject AppDbContext _context
+@model PDKS.Entities.OvertimeRequest
+
 @{
     ViewData["Title"] = "Yeni Mesai Talebi";
+
+    // GÜVENLİK: Yönetici mi yoksa personel mi kontrolü
+    bool isAdmin = User.IsInRole("Admin") || User.IsInRole("IK") || User.IsInRole("Mudur");
+    var userEmail = User.Identity.Name;
+    var currentEmployee = _context.Employees.FirstOrDefault(e => e.Email == userEmail);
 }
 
 <style>
+    /* --- SENİN PREMIUM TASARIMIN --- */
     .form-wrapper {
         display: flex;
         justify-content: center;
@@ -61,6 +71,16 @@
             box-shadow: 0 0 0 4px rgba(67, 24, 255, 0.1);
         }
 
+    /* Kilitli Kutu İçin Ekstra Tasarım */
+    .locked-input {
+        background-color: #f4f7fe;
+        color: #a3aed1;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        cursor: not-allowed;
+    }
+
     .btn-submit {
         background: linear-gradient(135deg, #4318ff 0%, #865cff 100%);
         color: white;
@@ -93,6 +113,10 @@
         .btn-back:hover {
             color: #2b3674;
         }
+
+    .text-primary {
+        color: #4318ff !important;
+    }
 </style>
 
 <div class="form-wrapper">
@@ -104,12 +128,26 @@
 
         <form asp-action="Create" method="post">
 
+            <!-- AKILLI PERSONEL SEÇİMİ -->
             <div class="mb-4">
-                <label class="form-label"><i class="fa-solid fa-user-tie me-2 text-primary"></i>Personel Seçimi</label>
-                <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="custom-input form-select">
-                    <option value="">-- Lütfen Personel Seçin --</option>
-                </select>
-                <span asp-validation-for="EmployeeId" class="text-danger" style="font-size: 0.8rem;"></span>
+                @if (isAdmin)
+                {
+                    <!-- Yönetici Görünümü -->
+                    <label class="form-label"><i class="fa-solid fa-user-tie me-2 text-primary"></i>Personel Seçimi</label>
+                    <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="custom-input form-select">
+                        <option value="">-- Lütfen Personel Seçin --</option>
+                    </select>
+                    <span asp-validation-for="EmployeeId" class="text-danger" style="font-size: 0.8rem;"></span>
+                }
+                else
+                {
+                    <!-- Personel Görünümü (Kilitli) -->
+                    <input type="hidden" asp-for="EmployeeId" value="@currentEmployee?.Id" />
+                    <label class="form-label"><i class="fa-solid fa-user-check me-2 text-primary"></i>Personel Bilgisi</label>
+                    <div class="custom-input locked-input">
+                        <i class="fa-solid fa-lock me-2"></i> @currentEmployee?.FirstName @currentEmployee?.LastName
+                    </div>
+                }
             </div>
 
             <div class="mb-4">
@@ -127,7 +165,7 @@
                 <div class="col-md-6 mt-3 mt-md-0">
                     <label class="form-label"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>Bitiş Saati</label>
                     <input asp-for="EndTime" type="time" class="custom-input" />
-                    <span asp-validation-for="EndTime" class="text-danger" style="font-size: 0.8rem;"></span>
+                    <span asp-validation-for="EndTime" class="text-danger" style="font-size: 0.8r   m;"></span>
                 </div>
             </div>
 

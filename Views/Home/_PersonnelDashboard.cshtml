@@ -1,0 +1,447 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using PDKS.Data.Contexts
+@inject AppDbContext _context
+@{
+    var userEmail = User.Identity.Name;
+
+    // Hareketler
+    var bugunHareketler = _context.Attendances
+        .Where(a => a.Employee.Email == userEmail && a.Date.Date == DateTime.Today)
+        .OrderByDescending(a => a.CheckInTime)
+        .ToList();
+
+    var ilkGiris = bugunHareketler.LastOrDefault()?.CheckInTime;
+    var sonCikis = bugunHareketler.FirstOrDefault()?.CheckOutTime;
+
+    // İzinler
+    var benimIzinlerim = _context.LeaveRequests
+        .Include(l => l.Employee)
+        .Where(l => l.Employee.Email == userEmail)
+        .OrderByDescending(l => l.StartDate)
+        .Take(4).ToList();
+
+    var bekleyenIzinSayisi = _context.LeaveRequests
+        .Count(l => l.Employee.Email == userEmail && l.Status == "Bekliyor");
+
+    // Duyurular
+    var duyurular = _context.Announcements
+        .Where(a => a.IsActive)
+        .OrderByDescending(a => a.CreatedDate)
+        .Take(3).ToList();
+
+    var aktifDuyuruSayisi = _context.Announcements.Count(a => a.IsActive);
+}
+
+<style>
+    /* --- ENTEGRE PREMIUM CSS --- */
+    .dash-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+        .dash-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        }
+
+    .icon-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+        .icon-box i {
+            font-size: 26px;
+        }
+
+    .card-info {
+        margin-left: 18px;
+    }
+
+    .card-title-text {
+        font-size: 13px;
+        font-weight: 700;
+        color: #8f9bba;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .card-number {
+        font-size: 26px;
+        font-weight: 800;
+        color: #2b3674;
+        line-height: 1;
+    }
+
+    .bg-green-light {
+        background-color: #e6fced;
+    }
+
+    .text-green-main {
+        color: #05cd99;
+    }
+
+    .bg-orange-light {
+        background-color: #fff4e5;
+    }
+
+    .text-orange-main {
+        color: #ff9f43;
+    }
+
+    .bg-blue-light {
+        background-color: #f4f7fe;
+    }
+
+    .text-blue-main {
+        color: #4318ff;
+    }
+
+    .bg-purple-light {
+        background-color: #f4e8ff;
+    }
+
+    .text-purple-main {
+        color: #8e33ff;
+    }
+
+    .content-widget {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        height: 100%;
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .content-widget-dark {
+        background: #0b1437;
+        color: white;
+        border: none;
+    }
+
+    .widget-title {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .widget-title-light {
+        color: #2b3674;
+    }
+
+    .widget-title-dark {
+        color: #ffffff;
+    }
+
+    .list-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .content-widget-dark .list-item {
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .list-item:last-child {
+        border-bottom: none;
+    }
+
+    .avatar-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-right: 15px;
+        color: #fff;
+    }
+
+    .leave-info h6 {
+        font-size: 15px;
+        font-weight: 800;
+        margin: 0 0 4px 0;
+        color: #fff;
+    }
+
+    .leave-info p {
+        font-size: 13px;
+        color: #a3aed1;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .premium-table th {
+            color: #a3aed1;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f4f7fe;
+            text-align: left;
+        }
+
+        .premium-table td {
+            padding: 15px 0;
+            border-bottom: 1px solid #f4f7fe;
+            vertical-align: middle;
+            color: #2b3674;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .premium-table tr:last-child td {
+            border-bottom: none;
+        }
+
+    .time-badge {
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .time-in {
+        color: #05cd99;
+        background: #e6fced;
+    }
+
+    .time-out {
+        color: #ff3d00;
+        background: #ffeae6;
+    }
+
+    .view-all-link {
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        color: #4318ff;
+        display: inline-block;
+        margin-top: 15px;
+        transition: 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+        .view-all-link:hover {
+            color: #2b3674;
+        }
+</style>
+
+<!-- 1. BÖLÜM: 4'LÜ MİNİMAL İSTATİSTİK KARTLARI -->
+<div class="row g-4">
+    <!-- Kart 1: Bugünkü İlk Giriş -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-green-light text-green-main"><i class="fa-solid fa-right-to-bracket"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">İlk Girişim</div>
+                <div class="card-number">@(ilkGiris?.ToString(@"hh\:mm") ?? "-")</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kart 2: Son Çıkış -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-orange-light text-orange-main"><i class="fa-solid fa-right-from-bracket"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">Son Çıkışım</div>
+                <div class="card-number">@(sonCikis?.ToString(@"hh\:mm") ?? "-")</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kart 3: Bekleyen İzinler -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-blue-light text-blue-main"><i class="fa-regular fa-hourglass-half"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">Bekleyen İzin</div>
+                <div class="card-number">@bekleyenIzinSayisi</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kart 4: Aktif Duyurular -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="dash-card">
+            <div class="icon-box bg-purple-light text-purple-main"><i class="fa-regular fa-bell"></i></div>
+            <div class="card-info">
+                <div class="card-title-text">Güncel Duyuru</div>
+                <div class="card-number">@aktifDuyuruSayisi</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. BÖLÜM: İZİNLER VE DUYURULAR -->
+<div class="row g-4 mt-2">
+    <!-- İzin Taleplerim (Dark Widget) -->
+    <div class="col-lg-6">
+        <div class="content-widget content-widget-dark">
+            <div class="widget-title widget-title-dark">
+                İzin Taleplerim
+                <i class="fa-solid fa-plane-departure" style="color: #a3aed1; font-size: 1.2rem;"></i>
+            </div>
+            <div class="widget-content">
+                @if (benimIzinlerim != null && benimIzinlerim.Any())
+                {
+                    @foreach (var item in benimIzinlerim)
+                    {
+                        <div class="list-item">
+                            <div class="avatar-icon">
+                                @if (item.Status == "Onaylandı")
+                                {
+                                    <i class="fa-solid fa-check" style="color: #05cd99;"></i>
+                                }
+                                else if (item.Status == "Reddedildi")
+                                {
+
+                                    <i class="fa-solid fa-xmark" style="color: #ef4444;"></i>
+                                }
+                                else
+                                {
+
+                                    <i class="fa-solid fa-clock-rotate-left" style="color: #ff9f43;"></i>
+                                }
+                            </div>
+                            <div class="leave-info">
+                                <h6>@item.StartDate.ToString("dd MMM") - @item.EndDate.ToString("dd MMM")</h6>
+                                <p>Durum: @item.Status</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p style="color: #a3aed1; font-size: 0.95rem; margin-top: 15px;">Hiç izin talebiniz bulunmuyor.</p>
+                }
+            </div>
+            <a asp-area="Personnel" asp-controller="LeaveRequest" asp-action="Index" class="view-all-link" style="color: #a3aed1;">Tüm Listeyi Gör &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Şirket Duyuruları -->
+    <div class="col-lg-6">
+        <div class="content-widget">
+            <div class="widget-title widget-title-light">
+                Şirket Panosu
+                <i class="fa-solid fa-thumbtack" style="color: #4318ff; font-size: 1.2rem;"></i>
+            </div>
+            @if (duyurular != null && duyurular.Any())
+            {
+                @foreach (var item in duyurular)
+                {
+                    <div class="mb-3 pb-3" style="border-bottom: 1px dashed #e2e8f0;">
+                        <div style="color: #a3aed1; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                            @item.CreatedDate.ToString("dd MMMM yyyy")
+                        </div>
+                        <h6 style="color: #2b3674; font-weight: 800; font-size: 1rem; margin-bottom: 4px;">
+                            @item.Title
+                        </h6>
+                        <p style="color: #707eae; font-size: 0.9rem; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            @item.Content
+                        </p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">Güncel duyuru bulunmuyor.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- 3. BÖLÜM: HAREKET TABLOSU -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="content-widget">
+            <div class="widget-title widget-title-light">
+                Bugünkü Hareket Dökümü
+                <i class="fa-solid fa-list-check" style="color: #05cd99;"></i>
+            </div>
+            @if (bugunHareketler != null && bugunHareketler.Any())
+            {
+                <div class="table-responsive">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Giriş İşlemi</th>
+                                <th>Çıkış İşlemi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in bugunHareketler)
+                            {
+                                <tr>
+                                    <td>@item.Date.ToString("dd MMMM yyyy")</td>
+                                    <td>
+                                        @if (item.CheckInTime.HasValue)
+                                        {
+                                            <span class="time-badge time-in">@item.CheckInTime.Value.ToString(@"hh\:mm")</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.CheckOutTime.HasValue)
+                                        {
+                                            <span class="time-badge time-out">@item.CheckOutTime.Value.ToString(@"hh\:mm")</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fa-regular fa-face-smile-wink mb-3" style="font-size: 2.5rem; color: #cbd5e1;"></i>
+                    <p style="color: #94a3b8; font-weight: 600; margin:0;">Bugün henüz bir giriş/çıkış kaydı oluşmamış.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

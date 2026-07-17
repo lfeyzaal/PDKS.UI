@@ -275,12 +275,18 @@
                     <i class="fa-solid fa-briefcase"></i> İletişim & Kurum Bilgileri
                 </div>
 
-                <!-- YENİ EKLENEN UNVAN ALANI -->
+                <!-- DÜZENLENEN KISIM: AÇILIR MENÜ OLDU -->
                 <div class="form-group">
-                    <label asp-for="Title" class="premium-label"></label>
-                    <input asp-for="Title" class="premium-input" placeholder="Örn: Müdür, Uzman..." />
+                    <label asp-for="Title" class="premium-label">Unvan / Yetki</label>
+                    <select asp-for="Title" class="premium-input">
+                        <option value="">-- Yetki Seçiniz --</option>
+                        <option value="Personel">Personel</option>
+                        <option value="Müdür">Müdür</option>
+                        <option value="İK Yetkilisi">İK Yetkilisi</option>
+                    </select>
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
+                <!-- DÜZENLENEN KISIM BİTİŞ -->
 
                 <div class="form-group">
                     <label asp-for="PhoneNumber" class="premium-label"></label>

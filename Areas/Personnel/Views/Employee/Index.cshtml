@@ -181,6 +181,33 @@
         border-radius: 8px;
     }
 
+    /* Unvan / Yetki Rozetleri */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 8px;
+        text-transform: uppercase;
+    }
+
+    .role-mudur {
+        background-color: #ffebee;
+        color: #e3342f;
+    }
+
+    .role-ik {
+        background-color: #e3f2fd;
+        color: #0984e3;
+    }
+
+    .role-personel {
+        background-color: #f4f7fe;
+        color: #8f9bba;
+    }
+
     /* Durum Rozetleri */
     .status-badge {
         padding: 6px 14px;
@@ -242,9 +269,13 @@
                 <input type="text" id="liveSearchInput" placeholder="Personel ara (İsim veya Soyisim)...">
             </div>
 
-            <a asp-area="Personnel" asp-controller="Employee" asp-action="Create" class="btn-add-new">
-                <i class="fa-solid fa-plus"></i> Yeni Personel
-            </a>
+            <!-- SİHİRLİ KİLİT: SADECE İK YETKİLİSİ YENİ PERSONEL EKLER -->
+            @if (User.IsInRole("IK") || User.IsInRole("Admin"))
+            {
+                <a asp-area="Personnel" asp-controller="Employee" asp-action="Create" class="btn-add-new">
+                    <i class="fa-solid fa-plus"></i> Yeni Personel
+                </a>
+            }
         </div>
     </div>
 
@@ -254,6 +285,7 @@
                 <th>Personel</th>
                 <th>TC Kimlik No</th>
                 <th>Departman</th>
+                <th>Unvan / Yetki</th>
                 <th>Telefon</th>
                 <th>İşe Giriş</th>
                 <th>Durum</th>
@@ -288,6 +320,25 @@
                                 <span class="dept-badge" style="background:#f4f7fe; color:#a3aed1;"><i class="fa-solid fa-sitemap"></i> Atanmadı</span>
                             }
                         </td>
+                        <td>
+                            @{
+                                string titleClass = "role-personel";
+                                string titleIcon = "fa-user";
+                                string displayTitle = string.IsNullOrEmpty(item.Title) ? "Personel" : item.Title;
+
+                                if (displayTitle.Contains("Müdür", StringComparison.OrdinalIgnoreCase) || displayTitle.Contains("Mudur", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    titleClass = "role-mudur";
+                                    titleIcon = "fa-user-tie";
+                                }
+                                else if (displayTitle.Contains("İK", StringComparison.OrdinalIgnoreCase) || displayTitle.Contains("IK", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    titleClass = "role-ik";
+                                    titleIcon = "fa-users-gear";
+                                }
+                            }
+                            <span class="role-badge @titleClass"><i class="fa-solid @titleIcon"></i> @displayTitle</span>
+                        </td>
                         <td>@item.PhoneNumber</td>
                         <td>@item.HireDate.ToString("dd.MM.yyyy")</td>
                         <td>
@@ -301,19 +352,25 @@
                             }
                         </td>
                         <td class="text-end">
-                            <!-- DETAY BUTONU EKLENDİ -->
+
+                            <!-- HERKES DETAY GÖREBİLİR -->
                             <a asp-area="Personnel" asp-controller="Employee" asp-action="Details" asp-route-id="@item.Id" class="action-btn info" title="Detay">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
 
-                            <a asp-area="Personnel" asp-controller="Employee" asp-action="Edit" asp-route-id="@item.Id" class="action-btn edit" title="Düzenle">
-                                <i class="fa-solid fa-pen"></i>
-                            </a>
-                            <form asp-area="Personnel" asp-controller="Employee" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('@item.FirstName personeli silinecek. Emin misiniz?');">
-                                <button type="submit" class="action-btn delete" title="Sil">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
+                            <!-- SİHİRLİ KİLİT: SADECE İK YETKİLİSİ DÜZENLEME VE SİLME YAPABİLİR -->
+                            @if (User.IsInRole("IK") || User.IsInRole("Admin"))
+                            {
+                                <a asp-area="Personnel" asp-controller="Employee" asp-action="Edit" asp-route-id="@item.Id" class="action-btn edit" title="Düzenle">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <form asp-area="Personnel" asp-controller="Employee" asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('@item.FirstName personeli silinecek. Emin misiniz?');">
+                                    <button type="submit" class="action-btn delete" title="Sil">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            }
+
                         </td>
                     </tr>
                 }
@@ -321,7 +378,7 @@
             else
             {
                 <tr id="noDataRow">
-                    <td colspan="7" class="text-center py-5 text-muted fw-bold">
+                    <td colspan="8" class="text-center py-5 text-muted fw-bold">
                         Sistemde henüz kayıtlı personel bulunmamaktadır.
                     </td>
                 </tr>

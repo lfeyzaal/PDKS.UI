@@ -14,35 +14,48 @@ namespace PDKS.UI.Data
             string[] roleNames = { "IK", "Mudur", "Personel" };
             foreach (var roleName in roleNames)
             {
-                // Eğer bu rol veritabanında yoksa, yeni oluştur.
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
                     await roleManager.CreateAsync(new AppRole { Name = roleName });
                 }
             }
 
-            // 2. PATRON (İK) HESABINI OLUŞTURUYORUZ
+            // 2. PATRON (İK) HESABINI KONTROL ET
             string adminEmail = "admin@pdks.com";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-            // Eğer bu mailde biri yoksa, ekle.
-            if (await userManager.FindByEmailAsync(adminEmail) == null)
+            // Eğer admin yoksa, oluştur
+            if (adminUser == null)
             {
-                AppUser adminUser = new AppUser
+                AppUser newAdmin = new AppUser
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
                     FirstName = "Sistem",
                     LastName = "Yöneticisi"
                 };
+                // 3. TEST PERSONELİ HESABINI OLUŞTUR
+                string personelEmail = "personel@pdks.com";
+                var personelUser = await userManager.FindByEmailAsync(personelEmail);
 
-                // Şifreyi 123 olarak belirliyoruz
-                IdentityResult result = await userManager.CreateAsync(adminUser, "123");
-
-                if (result.Succeeded)
+                if (personelUser == null)
                 {
-                    // Oluşturduğumuz bu kişiye "IK" yetkisini veriyoruz.
-                    await userManager.AddToRoleAsync(adminUser, "IK");
+                    AppUser newPersonel = new AppUser
+                    {
+                        UserName = personelEmail,
+                        Email = personelEmail,
+                        FirstName = "Deneme",
+                        LastName = "Personel"
+                    };
+
+                    // Personel için de aynı şifreyi veriyoruz
+                    await userManager.CreateAsync(newPersonel, "Sifre123.");
+                    await userManager.AddToRoleAsync(newPersonel, "Personel");
                 }
+
+                // İlk kurulum şifresi
+                await userManager.CreateAsync(newAdmin, "Sifre123.");
+                await userManager.AddToRoleAsync(newAdmin, "IK");
             }
         }
     }

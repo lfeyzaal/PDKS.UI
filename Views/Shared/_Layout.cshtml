@@ -148,8 +148,14 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a href="/" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-house"></i> Ana Sayfa</a></li>
-                <li><a asp-area="Personnel" asp-controller="Employee" asp-action="Index" class="@(currentController == "Employee" ? "active" : "")"><i class="fa-solid fa-users"></i> Personeller</a></li>
-                <li><a asp-area="Personnel" asp-controller="Department" asp-action="Index" class="@(currentController == "Department" ? "active" : "")"><i class="fa-solid fa-sitemap"></i> Departmanlar</a></li>
+
+                <!-- SİHİRLİ KİLİT: SADECE İK VE ADMİN GÖRÜR -->
+                @if (User.IsInRole("IK") || User.IsInRole("Admin"))
+                {
+                    <li><a asp-area="Personnel" asp-controller="Employee" asp-action="Index" class="@(currentController == "Employee" ? "active" : "")"><i class="fa-solid fa-users"></i> Personeller</a></li>
+                    <li><a asp-area="Personnel" asp-controller="Department" asp-action="Index" class="@(currentController == "Department" ? "active" : "")"><i class="fa-solid fa-sitemap"></i> Departmanlar</a></li>
+                }
+
                 <li><a asp-area="Personnel" asp-controller="LeaveRequest" asp-action="Index" class="@(currentController == "LeaveRequest" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i> İzin Talepleri</a></li>
                 <li><a asp-area="Personnel" asp-controller="OvertimeRequest" asp-action="Index" class="@(currentController == "OvertimeRequest" ? "active" : "")"><i class="fa-solid fa-clock"></i> <span>Mesai Takibi</span></a></li>
                 <li><a asp-area="Personnel" asp-controller="Attendance" asp-action="Index" class="@(currentController == "Attendance" ? "active" : "")"><i class="fa-solid fa-fingerprint"></i> <span>Giriş / Çıkışlar</span></a></li>
@@ -161,7 +167,6 @@
         <main class="main-content">
             <header class="topbar">
                 <div class="welcome-text">
-                    <!-- 1. DEĞİŞİKLİK: Giriş Yapan Kişinin Adını Yazdırma -->
                     @if (User.Identity.IsAuthenticated)
                     {
                         <h4>Hoş geldiniz, @User.Identity.Name 👋</h4>
@@ -179,7 +184,6 @@
                         <span>16 Temmuz 2026, Perşembe</span>
                     </div>
 
-                    <!-- 2. DEĞİŞİKLİK: Çıkış Yap Butonu -->
                     @if (User.Identity.IsAuthenticated)
                     {
                         <a asp-controller="Auth" asp-action="Logout" class="btn btn-sm d-flex align-items-center gap-2" style="background-color: #ffefef; color: #e74c3c; border-radius: 10px; font-weight: 600; padding: 6px 12px; text-decoration: none; border: 1px solid #ffe1e1; transition: 0.3s;">

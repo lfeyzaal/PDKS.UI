@@ -1,0 +1,308 @@
+﻿@using System.Security.Claims
+@model IEnumerable<PDKS.Entities.OvertimeRequest>
+@{
+    // 1. GÜVENLİK: Sadece sisteme giren kişiyi alıyoruz
+    var userEmail = User.Identity.Name;
+
+    // 2. FİLTRELEME: Sadece personelin kendi mesailerini çekiyoruz (Date yerine RequestDate yapıldı)
+    var benimMesailerim = Model
+        .Where(x => x.Employee?.Email == userEmail)
+        .OrderByDescending(x => x.RequestDate)
+        .ToList();
+
+    // 3. İSTATİSTİKLER: Kendi verilerinden hesaplamalar
+    var toplamTalep = benimMesailerim.Count;
+    var bekleyenOnaylar = benimMesailerim.Count(x => x.Status == "Bekliyor" || x.Status == "Pending");
+    var onaylananlar = benimMesailerim.Count(x => x.Status == "Onaylandı" || x.Status == "Approved");
+}
+
+<style>
+    /* --- ULTRA PREMIUM KART VE TABLO TASARIMI --- */
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    /* Üst İstatistik Kartları */
+    .stat-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(0,0,0,0.02);
+        border-left: 5px solid;
+        transition: transform 0.2s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.primary {
+            border-left-color: #4318ff;
+        }
+
+        .stat-card.warning {
+            border-left-color: #ff9f43;
+        }
+
+        .stat-card.success {
+            border-left-color: #05cd99;
+        }
+
+    .stat-info h6 {
+        color: #a3aed1;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+
+    .stat-info h3 {
+        color: #2b3674;
+        font-size: 28px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .primary .stat-icon {
+        background: #f4f7fe;
+        color: #4318ff;
+    }
+
+    .warning .stat-icon {
+        background: #fff4e5;
+        color: #ff9f43;
+    }
+
+    .success .stat-icon {
+        background: #e6fced;
+        color: #05cd99;
+    }
+
+    /* Ana Tablo Kartı */
+    .table-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px dashed #f4f7fe;
+    }
+
+    .page-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 22px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Premium Buton */
+    .btn-add-premium {
+        background: linear-gradient(135deg, #4318ff 0%, #8e33ff 100%);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 16px rgba(67, 24, 255, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 24, 255, 0.3);
+            color: white;
+        }
+
+    /* Premium Tablo */
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .premium-table th {
+            color: #a3aed1;
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 20px 15px 20px;
+            border-bottom: 1px solid #f4f7fe;
+            text-align: left;
+        }
+
+        .premium-table td {
+            padding: 18px 20px;
+            color: #2b3674;
+            font-weight: 700;
+            font-size: 14px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f4f7fe;
+            transition: 0.2s ease;
+        }
+
+        .premium-table tbody tr:hover td {
+            background-color: #fafbff;
+        }
+
+        .premium-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Rozetler */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background-color: #fff4e5;
+        color: #ff9f43;
+    }
+
+    .status-approved {
+        background-color: #e6fced;
+        color: #05cd99;
+    }
+
+    .status-rejected {
+        background-color: #ffeae6;
+        color: #ff3d00;
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- 1. KİŞİSEL İSTATİSTİK KARTLARI -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stat-card primary">
+                <div class="stat-info">
+                    <h6>Toplam Talebim</h6>
+                    <h3>@toplamTalep</h3>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-list-check"></i></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card warning">
+                <div class="stat-info">
+                    <h6>Bekleyen Onaylar</h6>
+                    <h3>@bekleyenOnaylar</h3>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card success">
+                <div class="stat-info">
+                    <h6>Onaylananlar</h6>
+                    <h3>@onaylananlar</h3>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MESAİ LİSTESİ TABLOSU -->
+    <div class="table-card">
+        <div class="page-header">
+            <h2 class="page-title"><i class="fa-solid fa-clock-rotate-left" style="color: #4318ff;"></i> Mesai Takip Merkezim</h2>
+            <a asp-action="Create" class="btn-add-premium">
+                <i class="fa-solid fa-plus"></i> Yeni Mesai Ekle
+            </a>
+        </div>
+
+        @if (benimMesailerim != null && benimMesailerim.Any())
+        {
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Saat Aralığı</th>
+                            <th>Gerekçe / Açıklama</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in benimMesailerim)
+                        {
+                            <tr>
+                                <!-- Date yerine RequestDate kullanıldı -->
+                                <td><i class="fa-regular fa-calendar" style="color: #4318ff; margin-right: 8px;"></i> @item.RequestDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <div style="background: #f4f7fe; display: inline-block; padding: 6px 12px; border-radius: 8px; color: #4318ff; font-weight: 800; font-size: 13px;">
+                                        <i class="fa-regular fa-clock"></i> @item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")
+                                    </div>
+                                </td>
+                                <td style="color: #707eae; font-weight: 600;">
+                                    @(string.IsNullOrEmpty(item.Reason) ? "Gerekçe belirtilmemiş" : item.Reason)
+                                </td>
+                                <td>
+                                    @if (item.Status == "Onaylandı")
+                                    {
+                                        <span class="status-badge status-approved"><i class="fa-solid fa-check"></i> Onaylandı</span>
+                                    }
+                                    else if (item.Status == "Reddedildi")
+                                    {
+                                        <span class="status-badge status-rejected"><i class="fa-solid fa-xmark"></i> Reddedildi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-pending"><i class="fa-solid fa-hourglass-half"></i> Bekliyor</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fa-solid fa-mug-hot mb-3" style="font-size: 4rem; color: #e2e8f0;"></i>
+                <h4 style="color: #2b3674; font-weight: 800; margin-bottom: 10px;">Mesai Kaydı Yok</h4>
+                <p style="color: #a3aed1; font-weight: 600; font-size: 15px;">Şu an için sisteme girilmiş bir mesai talebiniz bulunmuyor.</p>
+            </div>
+        }
+    </div>
+</div>

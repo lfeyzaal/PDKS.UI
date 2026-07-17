@@ -3,19 +3,53 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PDKS.Data.Contexts;
 using PDKS.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 [Area("Personnel")]
+[Authorize] // Controller'a giren herkes giriş yapmış olmalı
 public class LeaveRequestController : Controller
 {
     private readonly AppDbContext _context;
-    public LeaveRequestController(AppDbContext context) { _context = context; }
+
+    public LeaveRequestController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     // LİSTELEME
     public async Task<IActionResult> Index()
     {
-        var leaves = await _context.LeaveRequests
+        var query = _context.LeaveRequests
             .Include(l => l.Employee).ThenInclude(e => e.Department)
-            .OrderByDescending(l => l.StartDate).ToListAsync();
+            .AsQueryable();
+
+        var currentUserEmail = User.Identity.Name;
+
+        // 1. ÖNCELİK: İK veya Admin ise her şeyi görsün
+        if (User.IsInRole("IK") || User.IsInRole("Admin"))
+        {
+            // Filtre yok, hepsini getir
+        }
+        // 2. ÖNCELİK: Müdür ise kendi departmanındakileri görsün
+        else if (User.IsInRole("Mudur"))
+        {
+            var currentManager = await _context.Employees.FirstOrDefaultAsync(e => e.Email == currentUserEmail);
+            if (currentManager != null)
+            {
+                query = query.Where(l => l.Employee.DepartmentId == currentManager.DepartmentId);
+            }
+        }
+        // 3. ÖNCELİK: Personel ise sadece kendi verisini görsün
+        else
+        {
+            var currentEmployee = await _context.Employees.FirstOrDefaultAsync(e => e.Email == currentUserEmail);
+            if (currentEmployee != null)
+            {
+                query = query.Where(l => l.EmployeeId == currentEmployee.Id);
+            }
+        }
+
+        var leaves = await query.OrderByDescending(l => l.StartDate).ToListAsync();
         return View(leaves);
     }
 
@@ -44,9 +78,10 @@ public class LeaveRequestController : Controller
         return View(leave);
     }
 
-    // ONAYLAMA (YENİ EKLENDİ)
+    // ONAYLAMA
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Mudur,IK")]
     public async Task<IActionResult> Approve(int id)
     {
         var leave = await _context.LeaveRequests.FindAsync(id);
@@ -58,9 +93,10 @@ public class LeaveRequestController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // REDDETME (YENİ EKLENDİ)
+    // REDDETME
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Mudur,IK")]
     public async Task<IActionResult> Reject(int id)
     {
         var leave = await _context.LeaveRequests.FindAsync(id);
@@ -75,10 +111,15 @@ public class LeaveRequestController : Controller
     // SİLME
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Mudur,IK")] // Personel kendi kendine silmesin diye güvenlik ekledik
     public async Task<IActionResult> Delete(int id)
     {
         var leave = await _context.LeaveRequests.FindAsync(id);
-        if (leave != null) { _context.LeaveRequests.Remove(leave); await _context.SaveChangesAsync(); }
+        if (leave != null)
+        {
+            _context.LeaveRequests.Remove(leave);
+            await _context.SaveChangesAsync();
+        }
         return RedirectToAction(nameof(Index));
     }
 }

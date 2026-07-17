@@ -1,0 +1,212 @@
+﻿@using System.Security.Claims
+@model IEnumerable<PDKS.Entities.LeaveRequest>
+@{
+    // 1. GÜVENLİK VE FİLTRELEME: Sadece giriş yapan kullanıcının emailini alıyoruz
+    var userEmail = User.Identity.Name;
+
+    // 2. Sadece bu personele ait olan izinleri listeliyoruz
+    var benimIzinlerim = Model
+        .Where(x => x.Employee?.Email == userEmail)
+        .OrderByDescending(x => x.StartDate)
+        .ToList();
+}
+
+<style>
+    /* --- ULTRA PREMIUM KART VE TABLO TASARIMI --- */
+    .table-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px dashed #f4f7fe;
+    }
+
+    .page-title {
+        color: #2b3674;
+        font-weight: 800;
+        font-size: 24px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .page-subtitle {
+        color: #a3aed1;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 5px;
+    }
+
+    /* Premium Gradient Buton */
+    .btn-add-premium {
+        background: linear-gradient(135deg, #4318ff 0%, #8e33ff 100%);
+        color: white;
+        padding: 14px 28px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(67, 24, 255, 0.35);
+            color: white;
+        }
+
+    /* Tablo Tasarımı */
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .premium-table th {
+            color: #a3aed1;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 20px 15px 20px;
+            border-bottom: 1px solid #f4f7fe;
+            text-align: left;
+        }
+
+        .premium-table td {
+            padding: 20px;
+            color: #2b3674;
+            font-weight: 700;
+            font-size: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f4f7fe;
+            transition: background-color 0.2s ease;
+        }
+
+        .premium-table tbody tr:hover td {
+            background-color: #fafbff;
+        }
+
+        .premium-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Estetik Rozetler */
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background-color: #fff4e5;
+        color: #ff9f43;
+    }
+
+    .status-approved {
+        background-color: #e6fced;
+        color: #05cd99;
+    }
+
+    .status-rejected {
+        background-color: #ffeae6;
+        color: #ff3d00;
+    }
+
+    .type-badge {
+        background-color: #f4f7fe;
+        color: #4318ff;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 13px;
+    }
+</style>
+
+<div class="table-card">
+    <div class="page-header">
+        <div>
+            <h2 class="page-title"><i class="fa-solid fa-plane-departure" style="color: #4318ff;"></i> İzin Taleplerim</h2>
+            <div class="page-subtitle">Tüm izin geçmişin ve güncel taleplerin</div>
+        </div>
+
+        <!-- YENİ TALEP OLUŞTURMA BUTONU -->
+        <a asp-action="Create" class="btn-add-premium">
+            <i class="fa-solid fa-plus"></i> Yeni Talep Oluştur
+        </a>
+    </div>
+
+    @if (benimIzinlerim != null && benimIzinlerim.Any())
+    {
+        <div class="table-responsive">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>İzin Türü</th>
+                        <th>Başlangıç Tarihi</th>
+                        <th>Bitiş Tarihi</th>
+                        <th>Açıklama / Sebep</th>
+                        <th>Onay Durumu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in benimIzinlerim)
+                    {
+                        <tr>
+                            <td>
+                                <span class="type-badge">@item.LeaveType</span>
+                            </td>
+                            <td>@item.StartDate.ToString("dd MMMM yyyy")</td>
+                            <td>@item.EndDate.ToString("dd MMMM yyyy")</td>
+                            <td style="color: #707eae; font-weight: 600; font-size: 14px;">
+                                @(string.IsNullOrEmpty(item.Reason) ? "Belirtilmemiş" : item.Reason)
+                            </td>
+                            <td>
+                                @if (item.Status == "Onaylandı")
+                                {
+                                    <span class="status-badge status-approved"><i class="fa-solid fa-check"></i> Onaylandı</span>
+                                }
+                                else if (item.Status == "Reddedildi")
+                                {
+                                    <span class="status-badge status-rejected"><i class="fa-solid fa-xmark"></i> Reddedildi</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-pending"><i class="fa-solid fa-clock-rotate-left"></i> Bekliyor</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <!-- HİÇ İZİN YOKSA ÇIKACAK ESTETİK EKRAN -->
+        <div class="text-center py-5">
+            <i class="fa-regular fa-folder-open mb-3" style="font-size: 4rem; color: #e2e8f0;"></i>
+            <h4 style="color: #2b3674; font-weight: 800; margin-bottom: 10px;">Kayıt Bulunamadı</h4>
+            <p style="color: #a3aed1; font-weight: 600; font-size: 15px;">Henüz sistemde kayıtlı bir izin talebiniz bulunmuyor.<br>Yeni bir izin almak için yukarıdaki butonu kullanabilirsiniz.</p>
+        </div>
+    }
+</div>
